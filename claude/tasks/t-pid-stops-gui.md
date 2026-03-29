@@ -11,3 +11,9 @@ by some  regular trip in all these days.
 If the data from backend is not available, display an error message.
 
 Default: choose all available days, show all stops served.
+
+Current bugs:
+
+- displays only railway stops, should also display other stops (busses, trams, etc.)
+- displays stops beginning with T which are not actually stops (hide
+  them by default, add "Show pseudo-stops" toggler to UI)
