@@ -30,6 +30,7 @@
 
 - You may run Bash for-cycles and other scripts as long as the internals don't
   destroy data or the system you are running at.
+- Specifically it's OK to rebase your own branches in for-cycles without asking for permission.
 
 # Tasks
 
