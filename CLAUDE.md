@@ -47,6 +47,7 @@
   then execute it.
 - If something is too big, split that into the context files.
 - Do not ask for _any_ git operations. The local repository is completely yours.
+- Never touch `hacks/` but you may read it.
 
 # Tasks
 

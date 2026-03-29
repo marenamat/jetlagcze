@@ -14,3 +14,6 @@ Also allow setting relevant times (e.g. by a slider); by default the time
 intervals should be calculated between 9:00 and 21:00.
 
 For each stop display (in a detail window): minimum, maximum, average, median, 5-percentile and 95-percentile, and standard deviation.
+
+Something similar but different has been implemented in the `hacks/freq.pl` file,
+you may check the data in `hacks/freq-full.txt` whether your results are similar.

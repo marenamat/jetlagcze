@@ -15,8 +15,8 @@ Default: choose all available days, show all stops served.
 Also! Add a link to that GUI to README.md, so that one doesn't have to look for
 it.
 
-Current bugs:
+Stops beginning with T should be marked as pseudo-stops and hidden by default.
 
-- displays only railway stops, should also display other stops (busses, trams, etc.)
-- displays stops beginning with T which are not actually stops (hide
-  them by default, add "Show pseudo-stops" toggler to UI)
+By default, display multiple stops with the same name as one, in the average
+location. Add a button to the detail popup to show all instances (and to hide
+them back, of course).
