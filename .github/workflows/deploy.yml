@@ -1,0 +1,97 @@
+name: Deploy Frontend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'frontend/**'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+
+      - name: Cache Rust build
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            frontend/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('frontend/Cargo.toml') }}
+          restore-keys: ${{ runner.os }}-cargo-
+
+      - name: Build WASM frontend
+        run: |
+          cd frontend
+          wasm-pack build --release --target web --out-dir www/pkg
+
+      - name: Find latest successful pid-data run
+        id: pid_run
+        run: |
+          gh run list \
+            --repo "$GITHUB_REPOSITORY" \
+            --workflow pid-data.yml \
+            --status success \
+            --limit 1 \
+            --json databaseId \
+            --jq '.[0].databaseId' \
+            > /tmp/run_id.txt
+          read -r RUN_ID < /tmp/run_id.txt
+          if [ -n "$RUN_ID" ] && [ "$RUN_ID" != "null" ]; then
+            echo "run_id=$RUN_ID" >> "$GITHUB_OUTPUT"
+            echo "have_run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "have_run=false" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download CBOR artifacts from pid-data
+        if: ${{ steps.pid_run.outputs.have_run == 'true' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: pid-stops-cbor
+          path: site/
+          run-id: ${{ steps.pid_run.outputs.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download times CBOR artifact from pid-data
+        if: ${{ steps.pid_run.outputs.have_run == 'true' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: pid-stops-times-cbor
+          path: site/
+          run-id: ${{ steps.pid_run.outputs.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+      - name: Download and process GTFS (no artifact available)
+        if: ${{ steps.pid_run.outputs.have_run == 'false' }}
+        run: |
+          curl -fL https://data.pid.cz/PID_GTFS.zip -o PID_GTFS.zip
+          unzip PID_GTFS.zip -d gtfs
+          rm PID_GTFS.zip
+          pip install -r requirements.txt
+          mkdir -p site
+          python src/process_gtfs.py gtfs/ site/
+
+      - name: Assemble site
+        run: |
+          cp -r frontend/www/* site/
+          rm -f site/pkg/.gitignore
+
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: site/
+          keep_files: true
+          full_commit_message: "Deploy production site from ${{ github.sha }}"
