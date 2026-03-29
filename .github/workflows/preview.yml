@@ -43,6 +43,31 @@ jobs:
           cd frontend
           wasm-pack build --release --target web --out-dir www/pkg
 
+      - name: Fetch production CBOR data
+        if: steps.check.outputs.has_frontend == 'true'
+        id: cbor
+        run: |
+          mkdir -p data
+          if curl -fsSL https://marenamat.github.io/jetlagcze/pid_stops.cbor \
+              -o data/pid_stops.cbor; then
+            echo "have_cbor=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "have_cbor=false" >> "$GITHUB_OUTPUT"
+          fi
+          curl -fsSL https://marenamat.github.io/jetlagcze/pid_stops_times.cbor \
+            -o data/pid_stops_times.cbor || true
+
+      - name: Download and process GTFS (no production data available)
+        if: ${{ steps.check.outputs.has_frontend == 'true' && steps.cbor.outputs.have_cbor == 'false' }}
+        run: |
+          curl -fL https://data.pid.cz/PID_GTFS.zip -o PID_GTFS.zip
+          unzip PID_GTFS.zip -d gtfs
+          rm PID_GTFS.zip
+          pip install -r requirements.txt
+          mkdir -p output
+          python src/process_gtfs.py gtfs/ output/
+          cp output/pid_stops.cbor data/pid_stops.cbor
+
       - name: Assemble preview site
         if: steps.check.outputs.has_frontend == 'true'
         run: |
@@ -50,11 +75,8 @@ jobs:
           cp -r frontend/www/* site/
           # wasm-pack puts a .gitignore in pkg/ that would hide built files
           rm -f site/pkg/.gitignore
-          # Try to reuse production data so the preview is functional
-          curl -fsSL https://marenamat.github.io/jetlagcze/pid_stops.cbor \
-            -o site/pid_stops.cbor || true
-          curl -fsSL https://marenamat.github.io/jetlagcze/pid_stops_times.cbor \
-            -o site/pid_stops_times.cbor || true
+          cp data/pid_stops.cbor site/pid_stops.cbor
+          cp data/pid_stops_times.cbor site/pid_stops_times.cbor 2>/dev/null || true
 
       - name: Deploy preview
         if: steps.check.outputs.has_frontend == 'true'
