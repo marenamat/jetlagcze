@@ -12,6 +12,9 @@ If the data from backend is not available, display an error message.
 
 Default: choose all available days, show all stops served.
 
+Also! Add a link to that GUI to README.md, so that one doesn't have to look for
+it.
+
 Current bugs:
 
 - displays only railway stops, should also display other stops (busses, trams, etc.)
