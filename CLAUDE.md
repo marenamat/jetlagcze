@@ -25,6 +25,11 @@
 - Keep your main branch up-to-date with the upstream.
 - The upstream github repository is <https://github.com/marenamat/jetlagcze.git>
 
+# Limits
+
+- You may run Bash for-cycles and other scripts as long as the internals don't
+  destroy data or the system you are running at.
+
 # Tasks
 
 - Every file `claude/tasks/t-*.md` is a task to be done.
