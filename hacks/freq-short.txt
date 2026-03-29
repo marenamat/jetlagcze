@@ -1,7 +1,6 @@
 Loaded 354 exceptions
 Loaded 377 regular services
 Reduced to 295 available services
-Banned stops (way too little trips):
 Sídliště Uhříněves: 10, 21600, 24000, 28800
 Pod Hradem: 9, 18000, 20160, 21600
 Zadní Jiviny: 7, 14400, 15120, 16200

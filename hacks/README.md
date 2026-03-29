@@ -9,3 +9,7 @@ Check `freq-short.txt` for sorted stop list. Methodology:
   i.e. start watch when one bus departs, wait until four more depart, stop watch
 
 See `freq-full.txt` for all-departure list.
+
+Displayed data:
+
+Stop name: trip count, min dif time, avg, max
