@@ -11,6 +11,9 @@
 - Keep an up-to-date list of unanswered questions in `claude/pending.md`
 - Whenever you are stuck, start a watch-loop for new branches; you get
   your answers there
+- Author your commits as "Claude for JetLagCZE", e-mail <vibecoding-claude@jmq.cz>
+- Keep all your branches **rebased onto main**.
+- The upstream github repository is <https://github.com/marenamat/jetlagcze.git>
 
 # Tasks
 
