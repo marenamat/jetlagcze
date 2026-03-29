@@ -18,13 +18,16 @@
 - Do commits into branches prefixed with `mq-claude-`
 - Keep an up-to-date list of branches ready for code-review in `claude/codereview.md`
 - Keep an up-to-date list of unanswered questions in `claude/pending.md`
-- Whenever you are stuck, start a watch-loop for new branches; you get
-  your answers there
+- All the answers to the questions are (eventually) pushed to github.
 - Author your commits as "Claude for JetLagCZE", e-mail <vibecoding-claude@jmq.cz>
+
+# Regular checks
+
+- Whenever a github pipeline runs, check its outcome and fix problems.
+- Whenever a deployment should create an URL, check whether it actually is there.
 - Keep all your branches **rebased onto main**.
 - Keep your main branch up-to-date with the upstream.
 - The upstream github repository is <https://github.com/marenamat/jetlagcze.git>
-- Whenever a github pipeline runs, check its outcome and fix problems.
 
 # Limits
 
