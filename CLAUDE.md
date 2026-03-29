@@ -32,6 +32,7 @@
 - Nightly: Check whether all authors are filled in
 - Nightly: Check whether energy consumption is written down
 - Hourly: Check whether the dumped context is up-to-date
+- Hourly: Prune merged branches
 
 # Limits
 
