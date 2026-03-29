@@ -1,0 +1,65 @@
+name: Preview Deployment
+
+on:
+  push:
+    branches:
+      - 'mq-claude-*'
+
+jobs:
+  preview-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for frontend
+        id: check
+        run: |
+          if [ -d "frontend" ]; then
+            echo "has_frontend=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_frontend=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install wasm-pack
+        if: steps.check.outputs.has_frontend == 'true'
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+
+      - name: Cache Rust build
+        if: steps.check.outputs.has_frontend == 'true'
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            frontend/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('frontend/Cargo.toml') }}
+          restore-keys: ${{ runner.os }}-cargo-
+
+      - name: Build WASM frontend
+        if: steps.check.outputs.has_frontend == 'true'
+        run: |
+          cd frontend
+          wasm-pack build --release --target web --out-dir www/pkg
+
+      - name: Assemble preview site
+        if: steps.check.outputs.has_frontend == 'true'
+        run: |
+          mkdir -p site
+          cp -r frontend/www/* site/
+          # Try to reuse production data so the preview is functional
+          curl -fsSL https://marenamat.github.io/jetlagcze/pid_stops.cbor \
+            -o site/pid_stops.cbor || true
+          curl -fsSL https://marenamat.github.io/jetlagcze/pid_stops_times.cbor \
+            -o site/pid_stops_times.cbor || true
+
+      - name: Deploy preview
+        if: steps.check.outputs.has_frontend == 'true'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: site/
+          destination_dir: preview/${{ github.ref_name }}
+          keep_files: true
+          commit_message: "Preview deploy for ${{ github.ref_name }}"
