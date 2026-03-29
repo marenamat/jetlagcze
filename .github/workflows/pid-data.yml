@@ -1,0 +1,23 @@
+name: Download PID GTFS Data
+
+on:
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  download-gtfs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download and unpack PID GTFS
+        run: |
+          curl -fL https://data.pid.cz/PID_GTFS.zip -o PID_GTFS.zip
+          unzip PID_GTFS.zip -d gtfs
+          rm PID_GTFS.zip
+
+      - name: Upload GTFS artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pid-gtfs
+          path: gtfs/
+          retention-days: 1
