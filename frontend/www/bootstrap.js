@@ -79,6 +79,8 @@ clearBtn.addEventListener('click', function () {
       dateFrom.max = bounds[1];
       dateTo.min   = bounds[0];
       dateTo.max   = bounds[1];
+      dateFrom.value = bounds[0];
+      dateTo.value   = bounds[1];
     }
     status.textContent = 'Loaded ' + count + ' stops';
 
