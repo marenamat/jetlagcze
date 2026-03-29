@@ -21,3 +21,34 @@ jobs:
           name: pid-gtfs
           path: gtfs/
           retention-days: 1
+
+  process-stops:
+    needs: download-gtfs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: pid-gtfs
+          path: gtfs/
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Process GTFS data
+        run: python src/process_gtfs.py gtfs/ output/
+
+      - name: Upload SQLite artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pid-stops-sqlite
+          path: output/pid_stops.sqlite
+          retention-days: 1
+
+      - name: Upload CBOR artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pid-stops-cbor
+          path: output/pid_stops.cbor
+          retention-days: 7
