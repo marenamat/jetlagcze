@@ -1,4 +1,4 @@
-updated: 2026-03-29T17:35Z
+updated: 2026-03-29T18:12Z
 
 branches:
   - name: mq-claude-pid-data
@@ -16,20 +16,24 @@ branches:
       src/process_gtfs.py: streams GTFS CSVs into SQLite, expands
       calendar into service_dates, computes stop_active_days, writes
       pid_stops.cbor (stop positions + active dates per stop).
-      src/process_gtfs_times.py lives on mq-claude-pid-stops-gui-frequency.
       requirements.txt: cbor2.
       process-stops CI job added to pid-data.yml.
 
   - name: mq-claude-pid-stops-gui
     task: t-pid-stops-gui
-    status: bugs-reported
+    status: ready-for-review
     depends_on: mq-claude-pid-stops
     summary: >
       Rust/WASM frontend using Leaflet + Leaflet.markercluster.
-      load_stops() parses pid_stops.cbor; filter_stops() returns stops
-      active on all selected dates. Calendar date-range filter UI.
+      Fixes: map init moved to plain <script> in index.html (was silently
+      failing inside ES module). get_date_bounds() added to lib.rs.
+      bootstrap.js: uses window.map/clusterGroup, sets date input min/max
+      and default values from bounds after load. Default range = all days.
       deploy-frontend CI job builds with wasm-pack and deploys to gh-pages.
-      preview.yml deploys branches to /preview/<branch>/ on gh-pages.
+      preview.yml: downloads CBOR from latest successful pid-data artifact
+      run (via actions/download-artifact run-id); falls back to full GTFS
+      processing if no artifact exists. Removes pkg/.gitignore so built
+      WASM files are committed to gh-pages.
 
   - name: mq-claude-pid-stops-gui-readme
     task: t-pid-stops-gui
@@ -55,13 +59,11 @@ design_decisions:
   - pid_stops_times.cbor: departure times per stop per date; large, loaded lazily
   - SQLite used as intermediate scratch DB to avoid RAM explosion during processing
   - Leaflet chosen over pure-Rust tile renderer (less error-prone per answer a-pid-stops-gui.md)
-  - Preview deployments use production CBOR data fetched at deploy time
+  - Preview deployments pull CBOR from latest pid-data artifact run (not Pages URL)
+  - pkg/.gitignore removed before gh-pages deploy so wasm-pack output is committed
+  - Do not push to github; branches appear there after code review by user
 
-open_questions:
-  - bug: map shows only "Loading..." and no map tiles (bootstrap.js module import
-      failure likely; map init is inside the ES module so fails silently)
-  - bug: date selector should only allow dates available in the data
-  - pending: fix both bugs on mq-claude-pid-stops-gui branch
+open_questions: []
 
 cron_jobs:
   - id: a488f2ea
