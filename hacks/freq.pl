@@ -79,6 +79,7 @@ while (my $hr = $trips->fetchrow_hashref())
 }
 
 my %stop_info;
+my @bad_stops;
 
 foreach my $k (keys %stop_times) {
   my %sids;
@@ -87,9 +88,13 @@ foreach my $k (keys %stop_times) {
   grep { $_->{departure_time} ge "08:00:00" and $_->{departure_time} le "21:00:00" }
   @{$stop_times{$k}};
 
-  next if scalar @st < 5;
-  next if $st[0]->{departure_time} gt "10:00:00";
-  next if $st[$#st]->{departure_time} lt "19:00:00";
+  if (scalar @st < 5
+      or $st[0]->{departure_time} gt "10:00:00"
+      or $st[$#st]->{departure_time} lt "19:00:00"
+  ) {
+    push @bad_stops, $k;
+    next;
+  }
 
   map {
     my ($h, $m, $s) = split /:0?/, $_->{departure_time};
@@ -124,7 +129,12 @@ foreach my $k (keys %stop_times) {
   };
 }
 
-foreach my $k (sort {$stop_info{$b}->{difavg} <=> $stop_info{$a}->{difavg}} keys %stop_info) {
+say "Banned stops (way too little trips):";
+foreach my $k (sort {$a cmp $b} @bad_stops) {
+  say "  $k";
+}
+
+foreach my $k (sort {($stop_info{$b}->{difavg} <=> $stop_info{$a}->{difavg}) || ($a cmp $b)} keys %stop_info) {
   my $si = $stop_info{$k};
   say "$k: ", scalar @{$si->{times}}, ", $si->{difmin}, $si->{difavg}, $si->{difmax}";
 
