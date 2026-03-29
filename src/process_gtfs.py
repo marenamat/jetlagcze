@@ -8,7 +8,13 @@ Outputs:
   <output_dir>/pid_stops.sqlite  -- full data (stops, trips, stop_times,
                                     service_dates, stop_active_days)
   <output_dir>/pid_stops.cbor    -- compact summary for the GUI:
-                                    [{id, name, lat, lon, dates: [YYYY-MM-DD, ...]}]
+                                    [{id, name, lat, lon, pseudo, dates: [YYYY-MM-DD, ...]}]
+
+Notes:
+  - Stops with empty/zero lat/lon inherit coordinates from their parent_station.
+  - Stops still lacking valid coordinates after parent lookup are skipped.
+  - Stops whose stop_id starts with 'T' are marked pseudo=True (routing nodes,
+    not actual boarding locations).
 """
 
 import cbor2
@@ -88,6 +94,15 @@ def build_service_dates(conn: sqlite3.Connection, gtfs_dir: Path) -> None:
     conn.execute('CREATE INDEX idx_sd ON service_dates(service_id)')
 
 
+def parse_coord(s: str) -> float | None:
+    """Return float coordinate, or None if empty/zero/invalid."""
+    try:
+        v = float(s)
+        return v if v != 0.0 else None
+    except (ValueError, TypeError):
+        return None
+
+
 def main(gtfs_dir: Path, output_dir: Path) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
     db_path = output_dir / 'pid_stops.sqlite'
@@ -99,7 +114,8 @@ def main(gtfs_dir: Path, output_dir: Path) -> None:
         conn.execute('PRAGMA cache_size=-262144')  # 256 MB cache
 
         for table, filename, cols in [
-            ('stops',      'stops.txt',      ['stop_id', 'stop_name', 'stop_lat', 'stop_lon']),
+            ('stops',      'stops.txt',      ['stop_id', 'stop_name', 'stop_lat', 'stop_lon',
+                                              'parent_station']),
             ('routes',     'routes.txt',     ['route_id', 'route_short_name', 'route_type']),
             ('trips',      'trips.txt',      ['trip_id', 'route_id', 'service_id']),
             ('stop_times', 'stop_times.txt', ['trip_id', 'stop_id', 'departure_time', 'stop_sequence']),
@@ -130,6 +146,40 @@ def main(gtfs_dir: Path, output_dir: Path) -> None:
         ''')
         conn.execute('CREATE INDEX idx_sad ON stop_active_days(stop_id, date)')
 
+        # Build a coordinate table: prefer own lat/lon, fall back to parent_station.
+        print("  resolving stop coordinates ...")
+        coords: dict[str, tuple[float, float]] = {}
+        parent_of: dict[str, str] = {}
+
+        has_parent_col = bool(conn.execute(
+            "SELECT 1 FROM pragma_table_info('stops') WHERE name='parent_station'"
+        ).fetchone())
+
+        if has_parent_col:
+            rows = conn.execute(
+                'SELECT stop_id, stop_lat, stop_lon, parent_station FROM stops'
+            ).fetchall()
+        else:
+            rows = [
+                (sid, lat, lon, '')
+                for sid, lat, lon in conn.execute(
+                    'SELECT stop_id, stop_lat, stop_lon FROM stops'
+                ).fetchall()
+            ]
+
+        for stop_id, lat_s, lon_s, parent in rows:
+            lat = parse_coord(lat_s)
+            lon = parse_coord(lon_s)
+            if lat is not None and lon is not None:
+                coords[stop_id] = (lat, lon)
+            if parent:
+                parent_of[stop_id] = parent
+
+        # Second pass: fill in parent coordinates for stops missing their own.
+        for stop_id, parent in parent_of.items():
+            if stop_id not in coords and parent in coords:
+                coords[stop_id] = coords[parent]
+
         # Build CBOR payload from the summary table.
         print("  building CBOR summary ...")
         active: dict[str, list[str]] = {}
@@ -139,17 +189,25 @@ def main(gtfs_dir: Path, output_dir: Path) -> None:
             active.setdefault(stop_id, []).append(d)
 
         stops_data = []
-        for stop_id, name, lat, lon in conn.execute(
-            'SELECT stop_id, stop_name, stop_lat, stop_lon FROM stops'
-        ):
-            if stop_id in active:
-                stops_data.append({
-                    'id':    stop_id,
-                    'name':  name,
-                    'lat':   float(lat),
-                    'lon':   float(lon),
-                    'dates': active[stop_id],
-                })
+        skipped_no_coords = 0
+        for stop_id, name in conn.execute('SELECT stop_id, stop_name FROM stops'):
+            if stop_id not in active:
+                continue
+            if stop_id not in coords:
+                skipped_no_coords += 1
+                continue
+            lat, lon = coords[stop_id]
+            stops_data.append({
+                'id':     stop_id,
+                'name':   name,
+                'lat':    lat,
+                'lon':    lon,
+                'pseudo': stop_id.startswith('T'),
+                'dates':  active[stop_id],
+            })
+
+    if skipped_no_coords:
+        print(f"  skipped {skipped_no_coords} active stops with no resolvable coordinates")
 
     cbor_path = output_dir / 'pid_stops.cbor'
     print(f"Writing {cbor_path} ({len(stops_data)} stops) ...")
