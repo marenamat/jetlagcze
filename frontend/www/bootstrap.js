@@ -112,8 +112,14 @@ showPseudo.addEventListener('change', function () {
       dateFrom.max = bounds[1];
       dateTo.min   = bounds[0];
       dateTo.max   = bounds[1];
-      dateFrom.value = bounds[0];
-      dateTo.value   = bounds[1];
+      var today = new Date().toISOString().slice(0, 10);
+      if (today >= bounds[0] && today <= bounds[1]) {
+        dateFrom.value = today;
+        dateTo.value   = today;
+      } else {
+        dateFrom.value = bounds[0];
+        dateTo.value   = bounds[1];
+      }
     }
 
     const zones = get_zones();
