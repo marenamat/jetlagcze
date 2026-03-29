@@ -30,14 +30,20 @@
 - The upstream github repository is <https://github.com/marenamat/jetlagcze.git>
 - Nightly: Check whether all authors are filled in
 - Nightly: Check whether energy consumption is written down
+- Hourly: Check whether the dumped context is up-to-date
 
 # Limits
 
 - You may run Bash for-cycles and other scripts as long as the internals don't
   destroy data or the system you are running at.
-- Specifically it's OK to rebase your own branches in for-cycles without asking for permission.
+- Specifically it's OK to rebase your own branches in for-cycles without asking
+  for permission. Or, you can rebase them one by one, without asking.
 - If a task needs explicit approval, find a way to do it by regular means without
   asking for approval, or put the request into a question file.
+- Specifically do not use advanced bash techniques, e.g. expanding command output
+  on the command line, as that needs human intervention. Read the output, use
+  the data, run the appropriate commands one by one.
+- If something is too big, split that into the context files.
 
 # Tasks
 
