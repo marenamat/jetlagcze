@@ -72,10 +72,14 @@ pub fn get_zones() -> JsValue {
         let stops = stops.borrow();
         let mut seen: HashSet<String> = HashSet::new();
         for stop in stops.iter() {
-            for part in stop.zone.split(',') {
-                let z = part.trim();
-                if !z.is_empty() {
-                    seen.insert(z.to_string());
+            if stop.zone.is_empty() {
+                seen.insert("-".to_string());
+            } else {
+                for part in stop.zone.split(',') {
+                    let z = part.trim();
+                    if !z.is_empty() {
+                        seen.insert(z.to_string());
+                    }
                 }
             }
         }
@@ -107,8 +111,12 @@ pub fn filter_stops(dates_json: &str, zones_json: &str, show_pseudo: bool) -> Re
                     return false;
                 }
                 if !allowed_zones.is_empty() {
-                    let matches = s.zone.split(',')
-                        .any(|z| allowed_zones.contains(z.trim()));
+                    let matches = if s.zone.is_empty() {
+                        allowed_zones.contains("-")
+                    } else {
+                        s.zone.split(',')
+                            .any(|z| allowed_zones.contains(z.trim()))
+                    };
                     if !matches {
                         return false;
                     }
