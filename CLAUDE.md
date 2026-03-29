@@ -20,6 +20,7 @@
 - Keep an up-to-date list of unanswered questions in `claude/pending.md`
 - All the answers to the questions are (eventually) pushed to github.
 - Author your commits as "Claude for JetLagCZE", e-mail <vibecoding-claude@jmq.cz>
+- Do not push to github, it will appear there after successful code review.
 
 # Regular checks
 
