@@ -48,6 +48,8 @@ jobs:
         run: |
           mkdir -p site
           cp -r frontend/www/* site/
+          # wasm-pack puts a .gitignore in pkg/ that would hide built files
+          rm -f site/pkg/.gitignore
           # Try to reuse production data so the preview is functional
           curl -fsSL https://marenamat.github.io/jetlagcze/pid_stops.cbor \
             -o site/pid_stops.cbor || true

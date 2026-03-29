@@ -89,6 +89,8 @@ jobs:
         run: |
           mkdir -p site
           cp -r frontend/www/* site/
+          # wasm-pack puts a .gitignore in pkg/ that would hide built files
+          rm -f site/pkg/.gitignore
 
       - uses: actions/download-artifact@v4
         with:
