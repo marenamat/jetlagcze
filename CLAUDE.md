@@ -36,6 +36,8 @@
 - You may run Bash for-cycles and other scripts as long as the internals don't
   destroy data or the system you are running at.
 - Specifically it's OK to rebase your own branches in for-cycles without asking for permission.
+- If a task needs explicit approval, find a way to do it by regular means without
+  asking for approval, or put the request into a question file.
 
 # Tasks
 
