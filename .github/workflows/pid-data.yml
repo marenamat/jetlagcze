@@ -3,6 +3,12 @@ name: Download PID GTFS Data
 on:
   schedule:
     - cron: '0 2 * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'src/process_gtfs.py'
+      - 'src/process_gtfs_times.py'
+      - 'requirements.txt'
   workflow_dispatch:
 
 jobs:
