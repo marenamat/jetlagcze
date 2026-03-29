@@ -9,6 +9,8 @@ struct Stop {
     name: String,
     lat: f64,
     lon: f64,
+    #[serde(default)]
+    pseudo: bool,
     dates: Vec<String>,
 }
 
@@ -18,6 +20,7 @@ struct StopOut {
     name: String,
     lat: f64,
     lon: f64,
+    pseudo: bool,
 }
 
 thread_local! {
@@ -60,8 +63,9 @@ pub fn get_date_bounds() -> JsValue {
 
 /// Return stops active on every date in `dates` (JSON array of "YYYY-MM-DD" strings).
 /// An empty array means no filter — all stops are returned.
+/// If show_pseudo is false, stops marked as pseudo (routing nodes) are excluded.
 #[wasm_bindgen]
-pub fn filter_stops(dates_json: &str) -> Result<JsValue, JsValue> {
+pub fn filter_stops(dates_json: &str, show_pseudo: bool) -> Result<JsValue, JsValue> {
     let selected: Vec<String> = serde_json::from_str(dates_json)
         .map_err(|e| JsValue::from_str(&e.to_string()))?;
     let required: HashSet<&str> = selected.iter().map(String::as_str).collect();
@@ -71,6 +75,9 @@ pub fn filter_stops(dates_json: &str) -> Result<JsValue, JsValue> {
             .borrow()
             .iter()
             .filter(|s| {
+                if s.pseudo && !show_pseudo {
+                    return false;
+                }
                 if required.is_empty() {
                     return true;
                 }
@@ -82,6 +89,7 @@ pub fn filter_stops(dates_json: &str) -> Result<JsValue, JsValue> {
                 name: s.name.clone(),
                 lat: s.lat,
                 lon: s.lon,
+                pseudo: s.pseudo,
             })
             .collect()
     });

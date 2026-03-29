@@ -1,9 +1,10 @@
 import init, { load_stops, filter_stops, get_date_bounds } from './pkg/jetlagcze_frontend.js';
 
-const status   = document.getElementById('status');
-const dateFrom = document.getElementById('date-from');
-const dateTo   = document.getElementById('date-to');
-const clearBtn = document.getElementById('clear-btn');
+const status     = document.getElementById('status');
+const dateFrom   = document.getElementById('date-from');
+const dateTo     = document.getElementById('date-to');
+const clearBtn   = document.getElementById('clear-btn');
+const showPseudo = document.getElementById('show-pseudo');
 
 const map          = window.map;
 const clusterGroup = window.clusterGroup;
@@ -38,7 +39,7 @@ function renderStops(stops) {
 function applyFilter() {
   const dates = dateRange(dateFrom.value, dateTo.value);
   try {
-    const stops = filter_stops(JSON.stringify(dates));
+    const stops = filter_stops(JSON.stringify(dates), showPseudo.checked);
     renderStops(stops);
   } catch (e) {
     status.textContent = 'Filter error: ' + e;
@@ -58,6 +59,9 @@ dateTo.addEventListener('change', function () {
 clearBtn.addEventListener('click', function () {
   dateFrom.value = '';
   dateTo.value   = '';
+  applyFilter();
+});
+showPseudo.addEventListener('change', function () {
   applyFilter();
 });
 
