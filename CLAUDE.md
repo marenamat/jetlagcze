@@ -23,6 +23,11 @@
 - Every file `claude/tasks/q-*.md` is your question list to that task.
 - Every file `claude/tasks/a-*.md` are answers to these questions.
 
+# Deployment
+
+- All branches should have a deployment task which would make a test deployment
+  at a different URL, so that the result can be inspected before accepting into main.
+
 # Legal and Ethical
 
 - Report your energy consumption over time into `ECOLOGY.md`
