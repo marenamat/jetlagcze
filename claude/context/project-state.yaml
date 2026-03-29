@@ -1,4 +1,4 @@
-updated: 2026-03-29T18:12Z
+updated: 2026-03-29T18:30Z
 
 branches:
   - name: mq-claude-pid-data
@@ -16,8 +16,10 @@ branches:
       src/process_gtfs.py: streams GTFS CSVs into SQLite, expands
       calendar into service_dates, computes stop_active_days, writes
       pid_stops.cbor (stop positions + active dates per stop).
-      requirements.txt: cbor2.
-      process-stops CI job added to pid-data.yml.
+      Fixes: loads parent_station; resolves coordinates from parent
+      for stops with empty/zero lat/lon (was missing bus/tram stops);
+      marks stop_ids starting with 'T' as pseudo=True in CBOR.
+      requirements.txt: cbor2. process-stops CI job added to pid-data.yml.
 
   - name: mq-claude-pid-stops-gui
     task: t-pid-stops-gui
@@ -25,15 +27,14 @@ branches:
     depends_on: mq-claude-pid-stops
     summary: >
       Rust/WASM frontend using Leaflet + Leaflet.markercluster.
-      Fixes: map init moved to plain <script> in index.html (was silently
-      failing inside ES module). get_date_bounds() added to lib.rs.
-      bootstrap.js: uses window.map/clusterGroup, sets date input min/max
-      and default values from bounds after load. Default range = all days.
-      deploy-frontend CI job builds with wasm-pack and deploys to gh-pages.
-      preview.yml: downloads CBOR from latest successful pid-data artifact
-      run (via actions/download-artifact run-id); falls back to full GTFS
-      processing if no artifact exists. Removes pkg/.gitignore so built
-      WASM files are committed to gh-pages.
+      lib.rs: load_stops, get_date_bounds, filter_stops(dates_json, show_pseudo).
+      Stop/StopOut have pseudo: bool field (#[serde(default)]).
+      index.html: map init in plain <script>; Show pseudo-stops checkbox.
+      bootstrap.js: default date range = all available days; passes
+      showPseudo.checked to filter_stops.
+      preview.yml: downloads CBOR from latest pid-data artifact run;
+      falls back to full GTFS processing if none exists.
+      Removes pkg/.gitignore before gh-pages deploy.
 
   - name: mq-claude-pid-stops-gui-readme
     task: t-pid-stops-gui
@@ -55,13 +56,14 @@ branches:
       pid_stops_times.cbor loaded lazily in background.
 
 design_decisions:
-  - pid_stops.cbor: stop positions + active dates; small (~500KB), loaded eagerly
+  - pid_stops.cbor: stop positions + active dates + pseudo flag; loaded eagerly
   - pid_stops_times.cbor: departure times per stop per date; large, loaded lazily
   - SQLite used as intermediate scratch DB to avoid RAM explosion during processing
-  - Leaflet chosen over pure-Rust tile renderer (less error-prone per answer a-pid-stops-gui.md)
+  - Leaflet chosen over pure-Rust tile renderer (less error-prone)
   - Preview deployments pull CBOR from latest pid-data artifact run (not Pages URL)
   - pkg/.gitignore removed before gh-pages deploy so wasm-pack output is committed
   - Do not push to github; branches appear there after code review by user
+  - T-prefix stop IDs are routing nodes (pseudo-stops), hidden by default in UI
 
 open_questions: []
 
