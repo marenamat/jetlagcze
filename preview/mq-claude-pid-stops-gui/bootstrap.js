@@ -1,21 +1,12 @@
-import init, { load_stops, filter_stops } from './pkg/jetlagcze_frontend.js';
+import init, { load_stops, filter_stops, get_date_bounds } from './pkg/jetlagcze_frontend.js';
 
-const status  = document.getElementById('status');
+const status   = document.getElementById('status');
 const dateFrom = document.getElementById('date-from');
 const dateTo   = document.getElementById('date-to');
 const clearBtn = document.getElementById('clear-btn');
 
-// ── Map setup ────────────────────────────────────────────────────────────────
-
-const map = L.map('map').setView([50.08, 14.44], 11);
-
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-  maxZoom: 19,
-}).addTo(map);
-
-const clusterGroup = L.markerClusterGroup({ chunkedLoading: true });
-map.addLayer(clusterGroup);
+const map          = window.map;
+const clusterGroup = window.clusterGroup;
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -24,7 +15,7 @@ function dateRange(start, end) {
   if (!start || !end || start > end) return start ? [start] : [];
   const dates = [];
   const d = new Date(start + 'T00:00:00Z');
-  const last = new Date(end   + 'T00:00:00Z');
+  const last = new Date(end + 'T00:00:00Z');
   while (d <= last) {
     dates.push(d.toISOString().slice(0, 10));
     d.setUTCDate(d.getUTCDate() + 1);
@@ -38,10 +29,10 @@ function renderStops(stops) {
   clusterGroup.clearLayers();
   for (const s of stops) {
     const marker = L.marker([s.lat, s.lon]);
-    marker.bindPopup(`<b>${s.name}</b><br><small>${s.id}</small>`);
+    marker.bindPopup('<b>' + s.name + '</b><br><small>' + s.id + '</small>');
     clusterGroup.addLayer(marker);
   }
-  status.textContent = `${stops.length} stop${stops.length !== 1 ? 's' : ''}`;
+  status.textContent = stops.length + ' stop' + (stops.length !== 1 ? 's' : '');
 }
 
 function applyFilter() {
@@ -56,15 +47,15 @@ function applyFilter() {
 
 // ── Events ────────────────────────────────────────────────────────────────────
 
-dateFrom.addEventListener('change', () => {
+dateFrom.addEventListener('change', function () {
   if (dateTo.value && dateTo.value < dateFrom.value) dateTo.value = dateFrom.value;
   applyFilter();
 });
-dateTo.addEventListener('change', () => {
+dateTo.addEventListener('change', function () {
   if (dateFrom.value && dateFrom.value > dateTo.value) dateFrom.value = dateTo.value;
   applyFilter();
 });
-clearBtn.addEventListener('click', () => {
+clearBtn.addEventListener('click', function () {
   dateFrom.value = '';
   dateTo.value   = '';
   applyFilter();
@@ -72,20 +63,27 @@ clearBtn.addEventListener('click', () => {
 
 // ── Bootstrap ─────────────────────────────────────────────────────────────────
 
-(async () => {
+(async function () {
   try {
     await init();
 
-    status.textContent = 'Fetching stop data…';
+    status.textContent = 'Fetching stop data\u2026';
     const res = await fetch('./pid_stops.cbor');
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     const buf = await res.arrayBuffer();
 
     const count = load_stops(new Uint8Array(buf));
-    status.textContent = `Loaded ${count} stops`;
+    const bounds = get_date_bounds();
+    if (bounds) {
+      dateFrom.min = bounds[0];
+      dateFrom.max = bounds[1];
+      dateTo.min   = bounds[0];
+      dateTo.max   = bounds[1];
+    }
+    status.textContent = 'Loaded ' + count + ' stops';
 
     applyFilter();
   } catch (e) {
     status.textContent = 'Error: ' + e;
   }
-})();
+}());
