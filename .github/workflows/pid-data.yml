@@ -58,3 +58,52 @@ jobs:
           name: pid-stops-cbor
           path: output/pid_stops.cbor
           retention-days: 7
+
+  deploy-frontend:
+    needs: process-stops
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+
+      - name: Cache Rust build
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            frontend/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('frontend/Cargo.toml') }}
+          restore-keys: ${{ runner.os }}-cargo-
+
+      - name: Build WASM frontend
+        run: |
+          cd frontend
+          wasm-pack build --release --target web --out-dir www/pkg
+
+      - name: Assemble site
+        run: |
+          mkdir -p site
+          cp -r frontend/www/* site/
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: pid-stops-cbor
+          path: site/
+
+      - uses: actions/configure-pages@v4
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/
+
+      - id: deploy
+        uses: actions/deploy-pages@v4
