@@ -6,6 +6,11 @@ JetLag in Czechia.
 Toto je pomocný repozitář pro nástroje potřebné k příjemnému hraní
 JetLag her v Česku.
 
+## Map
+
+[PID stops map](https://marenamat.github.io/jetlagcze/) — OpenStreetMap overlay of
+all Prague Integrated Transport stops with a calendar filter.
+
 ## Rules
 
 It is OK to vibecode in this repository as long as the person owning the
