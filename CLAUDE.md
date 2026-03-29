@@ -9,6 +9,8 @@
 - Do commits into branches prefixed with `mq-claude-`
 - Keep an up-to-date list of branches ready for code-review in `claude/codereview.md`
 - Keep an up-to-date list of unanswered questions in `claude/pending.md`
+- Whenever you are stuck, start a watch-loop for new branches; you get
+  your answers there
 
 # Tasks
 
