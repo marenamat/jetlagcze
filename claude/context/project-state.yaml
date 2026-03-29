@@ -58,3 +58,14 @@ design_decisions:
   - Preview deployments use production CBOR data fetched at deploy time
 
 open_questions: []
+
+cron_jobs:
+  - id: a488f2ea
+    schedule: "*/2 * * * *"
+    note: session-only, must be recreated on session start
+    prompt: >
+      Check for new remote branches in the jetlagcze repo that contain
+      answer files (claude/tasks/a-*.md) or new task files
+      (claude/tasks/t-*.md) not yet processed. Run: git fetch github &&
+      git branch -r. For any new branch or new file found, read it and
+      proceed with the relevant work.
