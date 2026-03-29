@@ -35,6 +35,29 @@ pub fn load_stops(cbor_bytes: &[u8]) -> Result<usize, JsValue> {
     Ok(count)
 }
 
+/// Return [min_date, max_date] across all loaded stops, or null if no stops loaded.
+#[wasm_bindgen]
+pub fn get_date_bounds() -> JsValue {
+    STOPS.with(|stops| {
+        let stops = stops.borrow();
+        let mut min_date = "9999-99-99".to_string();
+        let mut max_date = "0000-00-00".to_string();
+        let mut found = false;
+        for stop in stops.iter() {
+            for d in &stop.dates {
+                if *d < min_date { min_date = d.clone(); }
+                if *d > max_date { max_date = d.clone(); }
+                found = true;
+            }
+        }
+        if found {
+            serde_wasm_bindgen::to_value(&[min_date, max_date]).unwrap_or(JsValue::NULL)
+        } else {
+            JsValue::NULL
+        }
+    })
+}
+
 /// Return stops active on every date in `dates` (JSON array of "YYYY-MM-DD" strings).
 /// An empty array means no filter — all stops are returned.
 #[wasm_bindgen]
