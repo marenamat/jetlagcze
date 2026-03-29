@@ -64,18 +64,22 @@ pub fn get_date_bounds() -> JsValue {
     })
 }
 
-/// Return the sorted list of distinct zone IDs across all loaded stops.
+/// Return the sorted list of distinct individual zone IDs across all loaded stops.
+/// Comma-separated zones (e.g. "6,7") are split into separate entries.
 #[wasm_bindgen]
 pub fn get_zones() -> JsValue {
     STOPS.with(|stops| {
         let stops = stops.borrow();
-        let mut seen: HashSet<&str> = HashSet::new();
-        let mut zones: Vec<&str> = Vec::new();
+        let mut seen: HashSet<String> = HashSet::new();
         for stop in stops.iter() {
-            if !stop.zone.is_empty() && seen.insert(&stop.zone) {
-                zones.push(&stop.zone);
+            for part in stop.zone.split(',') {
+                let z = part.trim();
+                if !z.is_empty() {
+                    seen.insert(z.to_string());
+                }
             }
         }
+        let mut zones: Vec<&str> = seen.iter().map(String::as_str).collect();
         zones.sort_unstable();
         serde_wasm_bindgen::to_value(&zones).unwrap_or(JsValue::NULL)
     })
@@ -102,8 +106,12 @@ pub fn filter_stops(dates_json: &str, zones_json: &str, show_pseudo: bool) -> Re
                 if s.pseudo && !show_pseudo {
                     return false;
                 }
-                if !allowed_zones.is_empty() && !allowed_zones.contains(s.zone.as_str()) {
-                    return false;
+                if !allowed_zones.is_empty() {
+                    let matches = s.zone.split(',')
+                        .any(|z| allowed_zones.contains(z.trim()));
+                    if !matches {
+                        return false;
+                    }
                 }
                 if required.is_empty() {
                     return true;
