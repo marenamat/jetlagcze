@@ -10,7 +10,6 @@ Steps:
 - In filter_stops (or a new function), accept a list of zones to include
 - In the UI, add a multi-choice zone selector (default: P, 0, B)
 
-Bugs:
-- stop may have multiple zones, e.g. 6,7 -> show them when zone 6 OR 7 is
-  switched on -> don't show category like 0,B
-- also the categories are now displayed OK but still only train stations are visible
+Stop may have multiple zones, e.g. 6,7 -> show them when zone 6 OR 7 is switched on -> don't show category like 0,B.
+
+Sort the zones by distance from Prague, i.e. P0B12345…
