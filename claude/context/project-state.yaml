@@ -1,51 +1,14 @@
-updated: 2026-03-29T18:30Z
+updated: 2026-03-30T00:30Z
 
 branches:
-  - name: mq-claude-pid-data
-    task: t-pid-data
-    status: ready-for-review
-    summary: >
-      Nightly CI job: downloads PID_GTFS.zip, unpacks, uploads as
-      1-day artifact. File: .github/workflows/pid-data.yml.
-
-  - name: mq-claude-pid-stops
-    task: t-pid-stops
-    status: ready-for-review
-    depends_on: mq-claude-pid-data
-    summary: >
-      src/process_gtfs.py: streams GTFS CSVs into SQLite, expands
-      calendar into service_dates, computes stop_active_days, writes
-      pid_stops.cbor (stop positions + active dates per stop).
-      Fixes: loads parent_station; resolves coordinates from parent
-      for stops with empty/zero lat/lon (was missing bus/tram stops);
-      marks stop_ids starting with 'T' as pseudo=True in CBOR.
-      requirements.txt: cbor2. process-stops CI job added to pid-data.yml.
-
-  - name: mq-claude-pid-stops-gui
-    task: t-pid-stops-gui
-    status: ready-for-review
-    depends_on: mq-claude-pid-stops
-    summary: >
-      Rust/WASM frontend using Leaflet + Leaflet.markercluster.
-      lib.rs: load_stops, get_date_bounds, filter_stops(dates_json, show_pseudo).
-      Stop/StopOut have pseudo: bool field (#[serde(default)]).
-      index.html: map init in plain <script>; Show pseudo-stops checkbox.
-      bootstrap.js: default date range = all available days; passes
-      showPseudo.checked to filter_stops.
-      preview.yml: downloads CBOR from latest pid-data artifact run;
-      falls back to full GTFS processing if none exists.
-      Removes pkg/.gitignore before gh-pages deploy.
-
   - name: mq-claude-pid-stops-gui-readme
     task: t-pid-stops-gui
     status: ready-for-review
-    depends_on: mq-claude-pid-stops-gui
     summary: Adds map link to README.md.
 
   - name: mq-claude-pid-stops-gui-frequency
     task: t-pid-stops-gui-frequency
     status: ready-for-review
-    depends_on: mq-claude-pid-stops-gui
     summary: >
       src/process_gtfs_times.py: generates pid_stops_times.cbor
       (departure times per stop per date, minutes from midnight).
@@ -53,10 +16,18 @@ branches:
       (min/max/avg/median/p5/p95/std_dev) over a sliding interval.
       UI: sliders for interval (5-120 min) and time window (hour
       granularity, default 9-21). Popup shows stats table.
-      pid_stops_times.cbor loaded lazily in background.
+      Zone filter integrated (zones + frequency in one UI).
+
+merged_branches:
+  - mq-claude-pid-data
+  - mq-claude-pid-stops
+  - mq-claude-pid-stops-gui
+  - mq-claude-pid-data-on-script-change
+  - mq-claude-deploy-frontend
+  - mq-claude-pid-stops-zones
 
 design_decisions:
-  - pid_stops.cbor: stop positions + active dates + pseudo flag; loaded eagerly
+  - pid_stops.cbor: stop positions + active dates + zone + pseudo flag; loaded eagerly
   - pid_stops_times.cbor: departure times per stop per date; large, loaded lazily
   - SQLite used as intermediate scratch DB to avoid RAM explosion during processing
   - Leaflet chosen over pure-Rust tile renderer (less error-prone)
@@ -64,16 +35,8 @@ design_decisions:
   - pkg/.gitignore removed before gh-pages deploy so wasm-pack output is committed
   - Do not push to github; branches appear there after code review by user
   - T-prefix stop IDs are routing nodes (pseudo-stops), hidden by default in UI
+  - Zone filter: comma-separated zone_id split into individual zones; empty zone = "-"
+  - deploy.yml triggers on frontend/ changes; pid-data.yml triggers on script changes
+  - First fix bugs, then think about features
 
 open_questions: []
-
-cron_jobs:
-  - id: a488f2ea
-    schedule: "*/2 * * * *"
-    note: session-only, must be recreated on session start
-    prompt: >
-      Check for new remote branches in the jetlagcze repo that contain
-      answer files (claude/tasks/a-*.md) or new task files
-      (claude/tasks/t-*.md) not yet processed. Run: git fetch github &&
-      git branch -r. For any new branch or new file found, read it and
-      proceed with the relevant work.
