@@ -43,30 +43,56 @@ jobs:
           cd frontend
           wasm-pack build --release --target web --out-dir www/pkg
 
-      - name: Fetch production CBOR data
+      - name: Find latest successful pid-data run
         if: steps.check.outputs.has_frontend == 'true'
-        id: cbor
+        id: pid_run
         run: |
-          mkdir -p data
-          if curl -fsSL https://marenamat.github.io/jetlagcze/pid_stops.cbor \
-              -o data/pid_stops.cbor; then
-            echo "have_cbor=true" >> "$GITHUB_OUTPUT"
+          gh run list \
+            --repo "$GITHUB_REPOSITORY" \
+            --workflow pid-data.yml \
+            --status success \
+            --limit 1 \
+            --json databaseId \
+            --jq '.[0].databaseId' \
+            > /tmp/run_id.txt
+          read -r RUN_ID < /tmp/run_id.txt
+          if [ -n "$RUN_ID" ] && [ "$RUN_ID" != "null" ]; then
+            echo "run_id=$RUN_ID" >> "$GITHUB_OUTPUT"
+            echo "have_run=true" >> "$GITHUB_OUTPUT"
           else
-            echo "have_cbor=false" >> "$GITHUB_OUTPUT"
+            echo "have_run=false" >> "$GITHUB_OUTPUT"
           fi
-          curl -fsSL https://marenamat.github.io/jetlagcze/pid_stops_times.cbor \
-            -o data/pid_stops_times.cbor || true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Download and process GTFS (no production data available)
-        if: ${{ steps.check.outputs.has_frontend == 'true' && steps.cbor.outputs.have_cbor == 'false' }}
+      - name: Download CBOR artifacts from pid-data
+        if: ${{ steps.check.outputs.has_frontend == 'true' && steps.pid_run.outputs.have_run == 'true' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: pid-stops-cbor
+          path: data/
+          run-id: ${{ steps.pid_run.outputs.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download times CBOR artifact from pid-data
+        if: ${{ steps.check.outputs.has_frontend == 'true' && steps.pid_run.outputs.have_run == 'true' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: pid-stops-times-cbor
+          path: data/
+          run-id: ${{ steps.pid_run.outputs.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+      - name: Download and process GTFS (no artifact available)
+        if: ${{ steps.check.outputs.has_frontend == 'true' && steps.pid_run.outputs.have_run == 'false' }}
         run: |
           curl -fL https://data.pid.cz/PID_GTFS.zip -o PID_GTFS.zip
           unzip PID_GTFS.zip -d gtfs
           rm PID_GTFS.zip
           pip install -r requirements.txt
-          mkdir -p output
-          python src/process_gtfs.py gtfs/ output/
-          cp output/pid_stops.cbor data/pid_stops.cbor
+          mkdir -p data
+          python src/process_gtfs.py gtfs/ data/
 
       - name: Assemble preview site
         if: steps.check.outputs.has_frontend == 'true'
