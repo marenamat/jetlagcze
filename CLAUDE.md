@@ -13,6 +13,7 @@
   your answers there
 - Author your commits as "Claude for JetLagCZE", e-mail <vibecoding-claude@jmq.cz>
 - Keep all your branches **rebased onto main**.
+- Keep your main branch up-to-date with the upstream.
 - The upstream github repository is <https://github.com/marenamat/jetlagcze.git>
 
 # Tasks
