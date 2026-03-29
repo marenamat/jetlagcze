@@ -12,3 +12,4 @@
 - tea: 1 dm³
 - cheese: 200 g
 - carrot: 80 g
+- an edamame-beans-carrot salad: 200 g
