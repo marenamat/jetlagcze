@@ -31,7 +31,8 @@ export function get_date_bounds() {
 }
 
 /**
- * Return the sorted list of distinct zone IDs across all loaded stops.
+ * Return the sorted list of distinct individual zone IDs across all loaded stops.
+ * Comma-separated zones (e.g. "6,7") are split into separate entries.
  * @returns {any}
  */
 export function get_zones() {

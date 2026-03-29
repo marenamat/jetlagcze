@@ -14,7 +14,8 @@ export function filter_stops(dates_json: string, zones_json: string, show_pseudo
 export function get_date_bounds(): any;
 
 /**
- * Return the sorted list of distinct zone IDs across all loaded stops.
+ * Return the sorted list of distinct individual zone IDs across all loaded stops.
+ * Comma-separated zones (e.g. "6,7") are split into separate entries.
  */
 export function get_zones(): any;
 
