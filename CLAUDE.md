@@ -28,6 +28,8 @@
 - Keep all your branches **rebased onto main**.
 - Keep your main branch up-to-date with the upstream.
 - The upstream github repository is <https://github.com/marenamat/jetlagcze.git>
+- Nightly: Check whether all authors are filled in
+- Nightly: Check whether energy consumption is written down
 
 # Limits
 
