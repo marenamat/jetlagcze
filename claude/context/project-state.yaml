@@ -1,4 +1,4 @@
-updated: 2026-03-29
+updated: 2026-03-29T17:35Z
 
 branches:
   - name: mq-claude-pid-data
@@ -22,7 +22,7 @@ branches:
 
   - name: mq-claude-pid-stops-gui
     task: t-pid-stops-gui
-    status: ready-for-review
+    status: bugs-reported
     depends_on: mq-claude-pid-stops
     summary: >
       Rust/WASM frontend using Leaflet + Leaflet.markercluster.
@@ -57,7 +57,11 @@ design_decisions:
   - Leaflet chosen over pure-Rust tile renderer (less error-prone per answer a-pid-stops-gui.md)
   - Preview deployments use production CBOR data fetched at deploy time
 
-open_questions: []
+open_questions:
+  - bug: map shows only "Loading..." and no map tiles (bootstrap.js module import
+      failure likely; map init is inside the ES module so fails silently)
+  - bug: date selector should only allow dates available in the data
+  - pending: fix both bugs on mq-claude-pid-stops-gui branch
 
 cron_jobs:
   - id: a488f2ea
