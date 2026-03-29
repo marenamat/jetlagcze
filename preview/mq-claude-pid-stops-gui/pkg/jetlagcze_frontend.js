@@ -3,13 +3,15 @@
 /**
  * Return stops active on every date in `dates` (JSON array of "YYYY-MM-DD" strings).
  * An empty array means no filter — all stops are returned.
+ * If show_pseudo is false, stops marked as pseudo (routing nodes) are excluded.
  * @param {string} dates_json
+ * @param {boolean} show_pseudo
  * @returns {any}
  */
-export function filter_stops(dates_json) {
+export function filter_stops(dates_json, show_pseudo) {
     const ptr0 = passStringToWasm0(dates_json, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.filter_stops(ptr0, len0);
+    const ret = wasm.filter_stops(ptr0, len0, show_pseudo);
     if (ret[2]) {
         throw takeFromExternrefTable0(ret[1]);
     }

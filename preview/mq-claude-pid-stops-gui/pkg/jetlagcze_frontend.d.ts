@@ -4,8 +4,9 @@
 /**
  * Return stops active on every date in `dates` (JSON array of "YYYY-MM-DD" strings).
  * An empty array means no filter — all stops are returned.
+ * If show_pseudo is false, stops marked as pseudo (routing nodes) are excluded.
  */
-export function filter_stops(dates_json: string): any;
+export function filter_stops(dates_json: string, show_pseudo: boolean): any;
 
 /**
  * Return [min_date, max_date] across all loaded stops, or null if no stops loaded.
@@ -22,7 +23,7 @@ export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembl
 
 export interface InitOutput {
     readonly memory: WebAssembly.Memory;
-    readonly filter_stops: (a: number, b: number) => [number, number, number];
+    readonly filter_stops: (a: number, b: number, c: number) => [number, number, number];
     readonly get_date_bounds: () => any;
     readonly load_stops: (a: number, b: number) => [number, number, number];
     readonly __wbindgen_externrefs: WebAssembly.Table;
