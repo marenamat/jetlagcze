@@ -1,0 +1,60 @@
+updated: 2026-03-29
+
+branches:
+  - name: mq-claude-pid-data
+    task: t-pid-data
+    status: ready-for-review
+    summary: >
+      Nightly CI job: downloads PID_GTFS.zip, unpacks, uploads as
+      1-day artifact. File: .github/workflows/pid-data.yml.
+
+  - name: mq-claude-pid-stops
+    task: t-pid-stops
+    status: ready-for-review
+    depends_on: mq-claude-pid-data
+    summary: >
+      src/process_gtfs.py: streams GTFS CSVs into SQLite, expands
+      calendar into service_dates, computes stop_active_days, writes
+      pid_stops.cbor (stop positions + active dates per stop).
+      src/process_gtfs_times.py lives on mq-claude-pid-stops-gui-frequency.
+      requirements.txt: cbor2.
+      process-stops CI job added to pid-data.yml.
+
+  - name: mq-claude-pid-stops-gui
+    task: t-pid-stops-gui
+    status: ready-for-review
+    depends_on: mq-claude-pid-stops
+    summary: >
+      Rust/WASM frontend using Leaflet + Leaflet.markercluster.
+      load_stops() parses pid_stops.cbor; filter_stops() returns stops
+      active on all selected dates. Calendar date-range filter UI.
+      deploy-frontend CI job builds with wasm-pack and deploys to gh-pages.
+      preview.yml deploys branches to /preview/<branch>/ on gh-pages.
+
+  - name: mq-claude-pid-stops-gui-readme
+    task: t-pid-stops-gui
+    status: ready-for-review
+    depends_on: mq-claude-pid-stops-gui
+    summary: Adds map link to README.md.
+
+  - name: mq-claude-pid-stops-gui-frequency
+    task: t-pid-stops-gui-frequency
+    status: ready-for-review
+    depends_on: mq-claude-pid-stops-gui
+    summary: >
+      src/process_gtfs_times.py: generates pid_stops_times.cbor
+      (departure times per stop per date, minutes from midnight).
+      Rust: load_times() + stop_stats() compute frequency stats
+      (min/max/avg/median/p5/p95/std_dev) over a sliding interval.
+      UI: sliders for interval (5-120 min) and time window (hour
+      granularity, default 9-21). Popup shows stats table.
+      pid_stops_times.cbor loaded lazily in background.
+
+design_decisions:
+  - pid_stops.cbor: stop positions + active dates; small (~500KB), loaded eagerly
+  - pid_stops_times.cbor: departure times per stop per date; large, loaded lazily
+  - SQLite used as intermediate scratch DB to avoid RAM explosion during processing
+  - Leaflet chosen over pure-Rust tile renderer (less error-prone per answer a-pid-stops-gui.md)
+  - Preview deployments use production CBOR data fetched at deploy time
+
+open_questions: []
