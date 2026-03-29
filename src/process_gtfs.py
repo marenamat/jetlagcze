@@ -8,7 +8,7 @@ Outputs:
   <output_dir>/pid_stops.sqlite  -- full data (stops, trips, stop_times,
                                     service_dates, stop_active_days)
   <output_dir>/pid_stops.cbor    -- compact summary for the GUI:
-                                    [{id, name, lat, lon, pseudo, dates: [YYYY-MM-DD, ...]}]
+                                    [{id, name, lat, lon, zone, pseudo, dates: [YYYY-MM-DD, ...]}]
 
 Notes:
   - Stops with empty/zero lat/lon inherit coordinates from their parent_station.
@@ -115,7 +115,7 @@ def main(gtfs_dir: Path, output_dir: Path) -> None:
 
         for table, filename, cols in [
             ('stops',      'stops.txt',      ['stop_id', 'stop_name', 'stop_lat', 'stop_lon',
-                                              'parent_station']),
+                                              'parent_station', 'zone_id']),
             ('routes',     'routes.txt',     ['route_id', 'route_short_name', 'route_type']),
             ('trips',      'trips.txt',      ['trip_id', 'route_id', 'service_id']),
             ('stop_times', 'stop_times.txt', ['trip_id', 'stop_id', 'departure_time', 'stop_sequence']),
@@ -154,31 +154,46 @@ def main(gtfs_dir: Path, output_dir: Path) -> None:
         has_parent_col = bool(conn.execute(
             "SELECT 1 FROM pragma_table_info('stops') WHERE name='parent_station'"
         ).fetchone())
+        has_zone_col = bool(conn.execute(
+            "SELECT 1 FROM pragma_table_info('stops') WHERE name='zone_id'"
+        ).fetchone())
 
-        if has_parent_col:
+        if has_parent_col and has_zone_col:
             rows = conn.execute(
-                'SELECT stop_id, stop_lat, stop_lon, parent_station FROM stops'
+                'SELECT stop_id, stop_lat, stop_lon, parent_station, zone_id FROM stops'
             ).fetchall()
+        elif has_parent_col:
+            rows = [
+                (sid, lat, lon, parent, '')
+                for sid, lat, lon, parent in conn.execute(
+                    'SELECT stop_id, stop_lat, stop_lon, parent_station FROM stops'
+                ).fetchall()
+            ]
         else:
             rows = [
-                (sid, lat, lon, '')
+                (sid, lat, lon, '', '')
                 for sid, lat, lon in conn.execute(
                     'SELECT stop_id, stop_lat, stop_lon FROM stops'
                 ).fetchall()
             ]
 
-        for stop_id, lat_s, lon_s, parent in rows:
+        zones: dict[str, str] = {}
+        for stop_id, lat_s, lon_s, parent, zone in rows:
             lat = parse_coord(lat_s)
             lon = parse_coord(lon_s)
             if lat is not None and lon is not None:
                 coords[stop_id] = (lat, lon)
             if parent:
                 parent_of[stop_id] = parent
+            if zone:
+                zones[stop_id] = zone
 
-        # Second pass: fill in parent coordinates for stops missing their own.
+        # Second pass: fill in parent coordinates and zones for stops missing their own.
         for stop_id, parent in parent_of.items():
             if stop_id not in coords and parent in coords:
                 coords[stop_id] = coords[parent]
+            if stop_id not in zones and parent in zones:
+                zones[stop_id] = zones[parent]
 
         # Build CBOR payload from the summary table.
         print("  building CBOR summary ...")
@@ -202,6 +217,7 @@ def main(gtfs_dir: Path, output_dir: Path) -> None:
                 'name':   name,
                 'lat':    lat,
                 'lon':    lon,
+                'zone':   zones.get(stop_id, ''),
                 'pseudo': stop_id.startswith('T'),
                 'dates':  active[stop_id],
             })

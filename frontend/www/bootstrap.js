@@ -1,10 +1,13 @@
-import init, { load_stops, filter_stops, get_date_bounds } from './pkg/jetlagcze_frontend.js';
+import init, { load_stops, filter_stops, get_date_bounds, get_zones } from './pkg/jetlagcze_frontend.js';
+
+const DEFAULT_ZONES = ['P', '0', 'B'];
 
 const status     = document.getElementById('status');
 const dateFrom   = document.getElementById('date-from');
 const dateTo     = document.getElementById('date-to');
 const clearBtn   = document.getElementById('clear-btn');
 const showPseudo = document.getElementById('show-pseudo');
+const zoneFilter = document.getElementById('zone-filter');
 
 const map          = window.map;
 const clusterGroup = window.clusterGroup;
@@ -24,13 +27,22 @@ function dateRange(start, end) {
   return dates;
 }
 
+function selectedZones() {
+  const boxes = zoneFilter.querySelectorAll('input[type="checkbox"]');
+  const result = [];
+  for (let i = 0; i < boxes.length; i++) {
+    if (boxes[i].checked) result.push(boxes[i].value);
+  }
+  return result;
+}
+
 // ── Rendering ─────────────────────────────────────────────────────────────────
 
 function renderStops(stops) {
   clusterGroup.clearLayers();
   for (const s of stops) {
     const marker = L.marker([s.lat, s.lon]);
-    marker.bindPopup('<b>' + s.name + '</b><br><small>' + s.id + '</small>');
+    marker.bindPopup('<b>' + s.name + '</b><br><small>' + s.id + (s.zone ? ' [' + s.zone + ']' : '') + '</small>');
     clusterGroup.addLayer(marker);
   }
   status.textContent = stops.length + ' stop' + (stops.length !== 1 ? 's' : '');
@@ -38,11 +50,28 @@ function renderStops(stops) {
 
 function applyFilter() {
   const dates = dateRange(dateFrom.value, dateTo.value);
+  const zones = selectedZones();
   try {
-    const stops = filter_stops(JSON.stringify(dates), showPseudo.checked);
+    const stops = filter_stops(JSON.stringify(dates), JSON.stringify(zones), showPseudo.checked);
     renderStops(stops);
   } catch (e) {
     status.textContent = 'Filter error: ' + e;
+  }
+}
+
+function buildZoneCheckboxes(zones) {
+  zoneFilter.textContent = '';
+  for (let i = 0; i < zones.length; i++) {
+    const z = zones[i];
+    const lbl = document.createElement('label');
+    const cb  = document.createElement('input');
+    cb.type  = 'checkbox';
+    cb.value = z;
+    cb.checked = DEFAULT_ZONES.indexOf(z) !== -1;
+    cb.addEventListener('change', applyFilter);
+    lbl.appendChild(cb);
+    lbl.appendChild(document.createTextNode(' ' + z));
+    zoneFilter.appendChild(lbl);
   }
 }
 
@@ -86,8 +115,15 @@ showPseudo.addEventListener('change', function () {
       dateFrom.value = bounds[0];
       dateTo.value   = bounds[1];
     }
-    status.textContent = 'Loaded ' + count + ' stops';
 
+    const zones = get_zones();
+    if (zones && zones.length > 0) {
+      buildZoneCheckboxes(zones);
+    } else {
+      zoneFilter.textContent = '(no zone data)';
+    }
+
+    status.textContent = 'Loaded ' + count + ' stops';
     applyFilter();
   } catch (e) {
     status.textContent = 'Error: ' + e;

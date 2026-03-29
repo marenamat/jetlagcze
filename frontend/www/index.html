@@ -47,6 +47,9 @@
     }
     #clear-btn:hover { background: #e8e8e8; }
 
+    #zone-filter { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
+    #zone-filter label { font-weight: normal; }
+
     #status { color: #555; margin-left: auto; }
 
     #map { flex: 1; }
@@ -61,7 +64,10 @@
   <input type="date" id="date-to" />
   <button id="clear-btn">Clear</button>
   <label style="font-weight:normal"><input type="checkbox" id="show-pseudo" /> Show pseudo-stops</label>
-  <span id="status">Loading…</span>
+  <span style="color:#999">|</span>
+  <label>Zones:</label>
+  <span id="zone-filter">Loading…</span>
+  <span id="status"></span>
 </div>
 
 <div id="map"></div>

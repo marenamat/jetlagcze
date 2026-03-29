@@ -10,6 +10,8 @@ struct Stop {
     lat: f64,
     lon: f64,
     #[serde(default)]
+    zone: String,
+    #[serde(default)]
     pseudo: bool,
     dates: Vec<String>,
 }
@@ -20,6 +22,7 @@ struct StopOut {
     name: String,
     lat: f64,
     lon: f64,
+    zone: String,
     pseudo: bool,
 }
 
@@ -61,14 +64,35 @@ pub fn get_date_bounds() -> JsValue {
     })
 }
 
-/// Return stops active on every date in `dates` (JSON array of "YYYY-MM-DD" strings).
-/// An empty array means no filter — all stops are returned.
+/// Return the sorted list of distinct zone IDs across all loaded stops.
+#[wasm_bindgen]
+pub fn get_zones() -> JsValue {
+    STOPS.with(|stops| {
+        let stops = stops.borrow();
+        let mut seen: HashSet<&str> = HashSet::new();
+        let mut zones: Vec<&str> = Vec::new();
+        for stop in stops.iter() {
+            if !stop.zone.is_empty() && seen.insert(&stop.zone) {
+                zones.push(&stop.zone);
+            }
+        }
+        zones.sort_unstable();
+        serde_wasm_bindgen::to_value(&zones).unwrap_or(JsValue::NULL)
+    })
+}
+
+/// Return stops active on every date in `dates` (JSON array of "YYYY-MM-DD" strings)
+/// and in one of the zones in `zones_json` (JSON array of strings; empty = all zones).
 /// If show_pseudo is false, stops marked as pseudo (routing nodes) are excluded.
 #[wasm_bindgen]
-pub fn filter_stops(dates_json: &str, show_pseudo: bool) -> Result<JsValue, JsValue> {
+pub fn filter_stops(dates_json: &str, zones_json: &str, show_pseudo: bool) -> Result<JsValue, JsValue> {
     let selected: Vec<String> = serde_json::from_str(dates_json)
         .map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let zone_filter: Vec<String> = serde_json::from_str(zones_json)
+        .map_err(|e| JsValue::from_str(&e.to_string()))?;
+
     let required: HashSet<&str> = selected.iter().map(String::as_str).collect();
+    let allowed_zones: HashSet<&str> = zone_filter.iter().map(String::as_str).collect();
 
     let result: Vec<StopOut> = STOPS.with(|stops| {
         stops
@@ -76,6 +100,9 @@ pub fn filter_stops(dates_json: &str, show_pseudo: bool) -> Result<JsValue, JsVa
             .iter()
             .filter(|s| {
                 if s.pseudo && !show_pseudo {
+                    return false;
+                }
+                if !allowed_zones.is_empty() && !allowed_zones.contains(s.zone.as_str()) {
                     return false;
                 }
                 if required.is_empty() {
@@ -89,6 +116,7 @@ pub fn filter_stops(dates_json: &str, show_pseudo: bool) -> Result<JsValue, JsVa
                 name: s.name.clone(),
                 lat: s.lat,
                 lon: s.lon,
+                zone: s.zone.clone(),
                 pseudo: s.pseudo,
             })
             .collect()
