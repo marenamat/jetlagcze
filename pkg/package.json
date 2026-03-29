@@ -1,0 +1,15 @@
+{
+  "name": "jetlagcze-frontend",
+  "type": "module",
+  "version": "0.1.0",
+  "files": [
+    "jetlagcze_frontend_bg.wasm",
+    "jetlagcze_frontend.js",
+    "jetlagcze_frontend.d.ts"
+  ],
+  "main": "jetlagcze_frontend.js",
+  "types": "jetlagcze_frontend.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}
