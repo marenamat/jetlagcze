@@ -4,6 +4,15 @@
 - Backend: Python, Bash, GitHub CI
 - Frontend: Rust compiled into WebAssembly, published to github.io
 
+# Context
+
+- Keep all context in `claude/context`; dump anything there, write any files,
+  you may also create subdirectories of that.
+- Dump any context which you don't immediately need, and load that context
+  whenever you need it back. Don't forget to commit that into Git, preferably
+  with the relevant work.
+- The context should be formatted as YAML if possible.
+
 # Workflow
 
 - Do commits into branches prefixed with `mq-claude-`
