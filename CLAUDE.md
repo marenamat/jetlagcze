@@ -3,6 +3,7 @@
 - No linkedin bullshit, no complicated messages.
 - Backend: Python, Bash, GitHub CI
 - Frontend: Rust compiled into WebAssembly, published to github.io
+- First fix bugs, then think about features
 
 # Context
 
