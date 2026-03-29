@@ -9,3 +9,5 @@ or multiple consecutive days, and displaying only stops which are served
 by some  regular trip in all these days.
 
 If the data from backend is not available, display an error message.
+
+Default: choose all available days, show all stops served.
