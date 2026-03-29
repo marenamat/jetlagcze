@@ -14,3 +14,5 @@ https://marenamat.github.io/jetlagcze/
 
 And branch previews at:
 https://marenamat.github.io/jetlagcze/preview/<branch-name>/
+
+*Setting done, now it previews somehow (yet wrongly)*
