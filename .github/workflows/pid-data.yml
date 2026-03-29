@@ -63,11 +63,7 @@ jobs:
     needs: process-stops
     runs-on: ubuntu-latest
     permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -99,11 +95,10 @@ jobs:
           name: pid-stops-cbor
           path: site/
 
-      - uses: actions/configure-pages@v4
-
-      - uses: actions/upload-pages-artifact@v3
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          path: site/
-
-      - id: deploy
-        uses: actions/deploy-pages@v4
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: site/
+          keep_files: true
+          full_commit_message: "Deploy production site from ${{ github.sha }}"
