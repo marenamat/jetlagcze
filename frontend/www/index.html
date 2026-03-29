@@ -23,20 +23,24 @@
     #controls {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       padding: 6px 10px;
       background: #f4f4f4;
       border-bottom: 1px solid #ccc;
       flex-wrap: wrap;
     }
 
-    #controls label { font-weight: bold; }
+    #controls label { font-weight: bold; white-space: nowrap; }
+    #controls .sep { color: #999; }
 
     #controls input[type="date"] {
       padding: 3px 6px;
       border: 1px solid #aaa;
       border-radius: 3px;
     }
+
+    #controls input[type="range"] { width: 80px; }
+    #controls .range-val { min-width: 3em; text-align: right; color: #333; }
 
     #clear-btn {
       padding: 3px 10px;
@@ -50,9 +54,16 @@
     #zone-filter { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
     #zone-filter label { font-weight: normal; }
 
-    #status { color: #555; margin-left: auto; }
+    #status { color: #555; margin-left: auto; white-space: nowrap; }
 
     #map { flex: 1; }
+
+    /* Frequency stats popup */
+    .freq-stats table { border-collapse: collapse; margin-top: 6px; font-size: 13px; }
+    .freq-stats td { padding: 1px 6px; }
+    .freq-stats td:first-child { color: #555; }
+    .freq-stats td:last-child { font-variant-numeric: tabular-nums; }
+    .freq-loading { color: #888; font-style: italic; }
   </style>
 </head>
 <body>
@@ -60,14 +71,28 @@
 <div id="controls">
   <label for="date-from">Days:</label>
   <input type="date" id="date-from" />
-  <span>–</span>
+  <span class="sep">–</span>
   <input type="date" id="date-to" />
   <button id="clear-btn">Clear</button>
   <label style="font-weight:normal"><input type="checkbox" id="show-pseudo" /> Show pseudo-stops</label>
   <label style="font-weight:normal"><input type="checkbox" id="coverage-toggle" checked /> Coverage</label>
-  <span style="color:#999">|</span>
+  <span class="sep">|</span>
   <label>Zones:</label>
   <span id="zone-filter">Loading…</span>
+
+  <span class="sep">|</span>
+
+  <label for="freq-interval">Interval:</label>
+  <input type="range" id="freq-interval" min="5" max="120" step="5" value="60" />
+  <span class="range-val" id="freq-interval-val">60 min</span>
+
+  <label for="freq-start">Window:</label>
+  <input type="range" id="freq-start" min="0" max="23" step="1" value="9" />
+  <span class="range-val" id="freq-start-val">9:00</span>
+  <span class="sep">–</span>
+  <input type="range" id="freq-end" min="0" max="23" step="1" value="21" />
+  <span class="range-val" id="freq-end-val">21:00</span>
+
   <span id="status"></span>
 </div>
 

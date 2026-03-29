@@ -43,7 +43,9 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Process GTFS data
-        run: python src/process_gtfs.py gtfs/ output/
+        run: |
+          python src/process_gtfs.py gtfs/ output/
+          python src/process_gtfs_times.py gtfs/ output/
 
       - name: Upload SQLite artifact
         uses: actions/upload-artifact@v4
@@ -57,6 +59,13 @@ jobs:
         with:
           name: pid-stops-cbor
           path: output/pid_stops.cbor
+          retention-days: 7
+
+      - name: Upload times CBOR artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pid-stops-times-cbor
+          path: output/pid_stops_times.cbor
           retention-days: 7
 
   deploy-frontend:
@@ -95,6 +104,11 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: pid-stops-cbor
+          path: site/
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: pid-stops-times-cbor
           path: site/
 
       - name: Deploy to gh-pages
