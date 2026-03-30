@@ -17,3 +17,6 @@ For each stop display (in a detail window): minimum, maximum, average, median, 5
 
 Something similar but different has been implemented in the `hacks/freq.pl` file,
 you may check the data in `hacks/freq-full.txt` whether your results are similar.
+
+Also add another slider, to set a lower cutoff for the average, by default on 2,
+and display only stops where the average is at least that cutoff.
