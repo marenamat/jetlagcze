@@ -386,16 +386,21 @@ function applyFilter() {
   try {
     let stops = filter_stops(JSON.stringify(dates), JSON.stringify(zones), showPseudo.checked);
 
-    // Apply frequency cutoff: hide stops where avg departures < cutoff.
+    // Apply frequency cutoff: hide all stops of a given name when the sum of avg
+    // departures across all physical stops of that name is below the cutoff.
     // Only active when times data is loaded and cutoff > 0.
-    const cutoff = parseFloat(freqCutoff.value);
+    // Read from the number input (not slider) to support values above 5.
+    const cutoff = Math.max(0, parseFloat(freqCutoffNum.value) || 0);
     if (timesReady && cutoff > 0) {
       const { startH, endH, interval } = freqParams();
       const datesJson = JSON.stringify(dates);
-      stops = stops.filter(function (s) {
+      // Sum avg over all physical stops with the same name.
+      const nameSum = {};
+      for (const s of stops) {
         const stats = stop_stats(s.id, datesJson, startH * 60, endH * 60, interval);
-        return stats && stats.avg >= cutoff;
-      });
+        nameSum[s.name] = (nameSum[s.name] || 0) + (stats ? stats.avg : 0);
+      }
+      stops = stops.filter(s => (nameSum[s.name] || 0) >= cutoff);
     }
 
     // Apply manual overrides (keyed by stop name).
@@ -527,8 +532,10 @@ freqCutoff.addEventListener('input', () => {
   if (timesReady) applyFilter();
 });
 freqCutoffNum.addEventListener('input', () => {
-  const v = Math.min(5, Math.max(0, parseFloat(freqCutoffNum.value) || 0));
-  freqCutoff.value = v;
+  // Slider is capped at 5, but the number input is not — allows precise values
+  // above the slider range.
+  const v = Math.max(0, parseFloat(freqCutoffNum.value) || 0);
+  freqCutoff.value = Math.min(5, v);
   if (timesReady) applyFilter();
 });
 
