@@ -1,11 +1,6 @@
-updated: 2026-03-30T14:30Z
+updated: 2026-03-30T15:00Z
 
 branches:
-  - name: mq-claude-pid-stops-gui-readme
-    task: t-pid-stops-gui
-    status: ready-for-review
-    summary: Adds map link to README.md.
-
   - name: mq-claude-optimize-cbor
     task: t-optimize-cbor
     status: ready-for-review
@@ -42,10 +37,11 @@ merged_branches:
   - mq-claude-pid-stops-hide-manually
   - mq-claude-pid-stops-refactor-menu
   - mq-claude-freq-fix-interval
+  - mq-claude-pid-stops-gui-readme
 
 tasks:
   - t-reauthor: DONE (all unmerged commits already authored as vibecoding-claude@jmq.cz)
-  - t-optimize-cbor: IN PROGRESS (branch ready, not yet pushed)
+  - t-optimize-cbor: READY-FOR-REVIEW (branch mq-claude-optimize-cbor)
 
 design_decisions:
   - pid_stops.cbor: stop positions + active dates + zone + pseudo flag; loaded eagerly
