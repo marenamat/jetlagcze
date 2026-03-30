@@ -14,3 +14,7 @@ Add also a search feature; typing in a stop name should hint matching stops
 by the distance from the center of the map. When selected / clicked, show it on
 map with a different color and without recalculation, just to show the location
 and detail window.
+
+The search feature should only show every stop of the same name once, not all
+the sub-instances. Also the hiding should be tied to the stop name. Nobody cares
+which physical stop is that, only logical ones.
