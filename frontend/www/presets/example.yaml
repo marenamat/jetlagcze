@@ -1,0 +1,19 @@
+# Example preset — load via URL: #preset:example
+# Adjust and save as any name under frontend/www/presets/NAME.yaml
+# URL will be: https://marenamat.github.io/jetlagcze/#preset:NAME
+
+date_from: null
+date_to: null
+show_pseudo: false
+coverage: true
+zones: [P, "0", B]
+frequency:
+  interval: 60
+  start: 9
+  end: 21
+  min_avg: 0
+overrides: {}
+map:
+  lat: 50.08
+  lon: 14.44
+  zoom: 11
