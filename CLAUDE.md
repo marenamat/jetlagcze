@@ -37,6 +37,7 @@
 - Nightly: Check whether energy consumption is written down
 - Hourly: Check whether the dumped context is up-to-date
 - Hourly: Prune merged branches
+- Every 10 minutes: Check for new work
 
 # Limits
 
