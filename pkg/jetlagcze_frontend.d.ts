@@ -25,6 +25,28 @@ export function get_zones(): any;
  */
 export function load_stops(cbor_bytes: Uint8Array): number;
 
+/**
+ * Load departure-times data from a CBOR byte slice.
+ * Can be called asynchronously after load_stops.
+ */
+export function load_times(cbor_bytes: Uint8Array): number;
+
+/**
+ * Compute frequency statistics for a single stop over selected dates.
+ *
+ * - `stop_id`: the stop to analyse
+ * - `dates_json`: JSON array of "YYYY-MM-DD" strings (empty = all loaded dates)
+ * - `start_min`: start of relevant time window (minutes from midnight), inclusive
+ * - `end_min`: end of relevant time window, inclusive
+ * - `interval_min`: window size I (minutes)
+ *
+ * Returns a JSON object {min, max, avg, median, p5, p95, std_dev}
+ * where each value is the average number of departures per day in a
+ * sliding interval of `interval_min` minutes, sampled at 1-minute granularity.
+ * Returns null if no data is available.
+ */
+export function stop_stats(stop_id: string, dates_json: string, start_min: number, end_min: number, interval_min: number): any;
+
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 
 export interface InitOutput {
@@ -33,6 +55,8 @@ export interface InitOutput {
     readonly get_date_bounds: () => any;
     readonly get_zones: () => any;
     readonly load_stops: (a: number, b: number) => [number, number, number];
+    readonly load_times: (a: number, b: number) => [number, number, number];
+    readonly stop_stats: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => [number, number, number];
     readonly __wbindgen_externrefs: WebAssembly.Table;
     readonly __wbindgen_malloc: (a: number, b: number) => number;
     readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;

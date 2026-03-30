@@ -1,4 +1,4 @@
-import init, { load_stops, filter_stops, get_date_bounds, get_zones } from './pkg/jetlagcze_frontend.js';
+import init, { load_stops, filter_stops, get_date_bounds, get_zones, load_times, stop_stats } from './pkg/jetlagcze_frontend.js';
 
 const DEFAULT_ZONES = ['P', '0', 'B'];
 
@@ -9,11 +9,24 @@ const clearBtn        = document.getElementById('clear-btn');
 const showPseudo      = document.getElementById('show-pseudo');
 const zoneFilter      = document.getElementById('zone-filter');
 const coverageToggle  = document.getElementById('coverage-toggle');
+const freqInterval    = document.getElementById('freq-interval');
+const freqIntVal      = document.getElementById('freq-interval-val');
+const freqStart       = document.getElementById('freq-start');
+const freqStartVal    = document.getElementById('freq-start-val');
+const freqEnd         = document.getElementById('freq-end');
+const freqEndVal      = document.getElementById('freq-end-val');
 
 const map          = window.map;
 const clusterGroup = window.clusterGroup;
 
+// ── State ─────────────────────────────────────────────────────────────────────
+
+let timesReady = false;
+
 // ── Helpers ──────────────────────────────────────────────────────────────────
+
+function fmt(h) { return `${h}:00`; }
+function fmtF(v) { return v.toFixed(2); }
 
 /** Generate all ISO dates between start and end (inclusive). */
 function dateRange(start, end) {
@@ -144,13 +157,70 @@ const CoverageLayer = L.Layer.extend({
 
 const coverageLayer = new CoverageLayer();
 
+function currentDates() {
+  return dateRange(dateFrom.value, dateTo.value);
+}
+
+function freqParams() {
+  return {
+    interval: parseInt(freqInterval.value, 10),
+    startH:   parseInt(freqStart.value, 10),
+    endH:     parseInt(freqEnd.value, 10),
+  };
+}
+
+// ── Frequency popup ───────────────────────────────────────────────────────────
+
+function buildPopup(stop, dates) {
+  const { interval, startH, endH } = freqParams();
+  const zoneTag = stop.zone ? ' [' + stop.zone + ']' : '';
+
+  if (!timesReady) {
+    return `<b>${stop.name}</b><br><small>${stop.id}${zoneTag}</small>
+            <p class="freq-loading">Loading frequency data…</p>`;
+  }
+
+  const stats = stop_stats(
+    stop.id,
+    JSON.stringify(dates),
+    startH * 60,
+    endH * 60,
+    interval,
+  );
+
+  if (!stats) {
+    return `<b>${stop.name}</b><br><small>${stop.id}${zoneTag}</small>
+            <p class="freq-loading">No departure data for this stop.</p>`;
+  }
+
+  return `<b>${stop.name}</b><br><small>${stop.id}${zoneTag}</small>
+          <div class="freq-stats">
+            Departures per ${interval} min window
+            (${fmt(startH)}–${fmt(endH)},
+             ${dates.length > 0 ? dates.length + ' day(s)' : 'all days'}):<br>
+            <table>
+              <tr><td>min</td><td>${fmtF(stats.min)}</td></tr>
+              <tr><td>max</td><td>${fmtF(stats.max)}</td></tr>
+              <tr><td>avg</td><td>${fmtF(stats.avg)}</td></tr>
+              <tr><td>median</td><td>${fmtF(stats.median)}</td></tr>
+              <tr><td>p5</td><td>${fmtF(stats.p5)}</td></tr>
+              <tr><td>p95</td><td>${fmtF(stats.p95)}</td></tr>
+              <tr><td>std dev</td><td>${fmtF(stats.std_dev)}</td></tr>
+            </table>
+          </div>`;
+}
+
 // ── Rendering ─────────────────────────────────────────────────────────────────
 
+let currentStops = [];
+
 function renderStops(stops) {
+  currentStops = stops;
   clusterGroup.clearLayers();
+  const dates = currentDates();
   for (const s of stops) {
     const marker = L.marker([s.lat, s.lon]);
-    marker.bindPopup('<b>' + s.name + '</b><br><small>' + s.id + (s.zone ? ' [' + s.zone + ']' : '') + '</small>');
+    marker.bindPopup(() => buildPopup(s, dates));
     clusterGroup.addLayer(marker);
   }
   status.textContent = stops.length + ' stop' + (stops.length !== 1 ? 's' : '');
@@ -158,7 +228,7 @@ function renderStops(stops) {
 }
 
 function applyFilter() {
-  const dates = dateRange(dateFrom.value, dateTo.value);
+  const dates = currentDates();
   const zones = selectedZones();
   try {
     const stops = filter_stops(JSON.stringify(dates), JSON.stringify(zones), showPseudo.checked);
@@ -206,6 +276,18 @@ coverageToggle.addEventListener('change', function () {
   coverageLayer.setEnabled(coverageToggle.checked);
 });
 
+freqInterval.addEventListener('input', () => {
+  freqIntVal.textContent = freqInterval.value + ' min';
+});
+freqStart.addEventListener('input', () => {
+  freqStartVal.textContent = fmt(freqStart.value);
+  if (+freqStart.value > +freqEnd.value) freqEnd.value = freqStart.value;
+});
+freqEnd.addEventListener('input', () => {
+  freqEndVal.textContent = fmt(freqEnd.value);
+  if (+freqEnd.value < +freqStart.value) freqStart.value = freqEnd.value;
+});
+
 // ── Bootstrap ─────────────────────────────────────────────────────────────────
 
 (async function () {
@@ -246,6 +328,16 @@ coverageToggle.addEventListener('change', function () {
 
     status.textContent = 'Loaded ' + count + ' stops';
     applyFilter();
+
+    // Load departure-times data in the background.
+    fetch('./pid_stops_times.cbor')
+      .then(r => r.ok ? r.arrayBuffer() : Promise.reject('HTTP ' + r.status))
+      .then(buf => {
+        load_times(new Uint8Array(buf));
+        timesReady = true;
+      })
+      .catch(e => console.warn('Could not load times data:', e));
+
   } catch (e) {
     status.textContent = 'Error: ' + e;
   }

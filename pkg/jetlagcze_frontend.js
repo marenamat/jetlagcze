@@ -56,6 +56,54 @@ export function load_stops(cbor_bytes) {
     return ret[0] >>> 0;
 }
 
+/**
+ * Load departure-times data from a CBOR byte slice.
+ * Can be called asynchronously after load_stops.
+ * @param {Uint8Array} cbor_bytes
+ * @returns {number}
+ */
+export function load_times(cbor_bytes) {
+    const ptr0 = passArray8ToWasm0(cbor_bytes, wasm.__wbindgen_malloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.load_times(ptr0, len0);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return ret[0] >>> 0;
+}
+
+/**
+ * Compute frequency statistics for a single stop over selected dates.
+ *
+ * - `stop_id`: the stop to analyse
+ * - `dates_json`: JSON array of "YYYY-MM-DD" strings (empty = all loaded dates)
+ * - `start_min`: start of relevant time window (minutes from midnight), inclusive
+ * - `end_min`: end of relevant time window, inclusive
+ * - `interval_min`: window size I (minutes)
+ *
+ * Returns a JSON object {min, max, avg, median, p5, p95, std_dev}
+ * where each value is the average number of departures per day in a
+ * sliding interval of `interval_min` minutes, sampled at 1-minute granularity.
+ * Returns null if no data is available.
+ * @param {string} stop_id
+ * @param {string} dates_json
+ * @param {number} start_min
+ * @param {number} end_min
+ * @param {number} interval_min
+ * @returns {any}
+ */
+export function stop_stats(stop_id, dates_json, start_min, end_min, interval_min) {
+    const ptr0 = passStringToWasm0(stop_id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ptr1 = passStringToWasm0(dates_json, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len1 = WASM_VECTOR_LEN;
+    const ret = wasm.stop_stats(ptr0, len0, ptr1, len1, start_min, end_min, interval_min);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
 function __wbg_get_imports() {
     const import0 = {
         __proto__: null,

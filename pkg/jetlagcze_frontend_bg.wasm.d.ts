@@ -5,6 +5,8 @@ export const filter_stops: (a: number, b: number, c: number, d: number, e: numbe
 export const get_date_bounds: () => any;
 export const get_zones: () => any;
 export const load_stops: (a: number, b: number) => [number, number, number];
+export const load_times: (a: number, b: number) => [number, number, number];
+export const stop_stats: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => [number, number, number];
 export const __wbindgen_externrefs: WebAssembly.Table;
 export const __wbindgen_malloc: (a: number, b: number) => number;
 export const __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
