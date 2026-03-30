@@ -19,6 +19,11 @@ const freqCutoff      = document.getElementById('freq-cutoff');
 const freqCutoffNum   = document.getElementById('freq-cutoff-num');
 const stopSearch      = document.getElementById('stop-search');
 const searchDropdown  = document.getElementById('search-dropdown');
+const stateSaveBtn    = document.getElementById('state-save');
+const stateLoadBtn    = document.getElementById('state-load-btn');
+const stateLoadFile   = document.getElementById('state-load-file');
+const stateShareBtn   = document.getElementById('state-share');
+const stateResetBtn   = document.getElementById('state-reset');
 
 const map          = window.map;
 const clusterGroup = window.clusterGroup;
@@ -423,6 +428,7 @@ function applyFilter() {
 
     renderStops(stops);
     renderGhostStops();
+    saveToLocalStorage();
   } catch (e) {
     status.textContent = 'Filter error: ' + e;
   }
@@ -491,6 +497,159 @@ stopSearch.addEventListener('input', function () {
 
 stopSearch.addEventListener('blur', function () {
   setTimeout(function () { searchDropdown.style.display = 'none'; }, 150);
+});
+
+// ── Settings: collect / apply / YAML / URL ───────────────────────────────────
+
+const STORAGE_KEY = 'jetlagcze-settings';
+
+function collectSettings() {
+  const center = map.getCenter();
+  const zones = selectedZones();
+  return {
+    date_from:  dateFrom.value || null,
+    date_to:    dateTo.value   || null,
+    show_pseudo: showPseudo.checked,
+    coverage:   coverageToggle.checked,
+    zones:      zones,
+    frequency: {
+      interval: parseInt(freqInterval.value, 10),
+      start:    parseInt(freqStart.value, 10),
+      end:      parseInt(freqEnd.value, 10),
+      min_avg:  parseFloat(freqCutoffNum.value) || 0,
+    },
+    overrides: Object.assign({}, manualOverrides),
+    map: {
+      lat:  parseFloat(center.lat.toFixed(5)),
+      lon:  parseFloat(center.lng.toFixed(5)),
+      zoom: map.getZoom(),
+    },
+  };
+}
+
+// Apply settings object to all controls. Zones list must already be built.
+function applySettings(s) {
+  if (!s) return;
+  if (s.date_from != null) dateFrom.value = s.date_from; else dateFrom.value = '';
+  if (s.date_to   != null) dateTo.value   = s.date_to;   else dateTo.value   = '';
+  if (s.show_pseudo != null) showPseudo.checked    = !!s.show_pseudo;
+  if (s.coverage    != null) coverageToggle.checked = !!s.coverage;
+
+  if (Array.isArray(s.zones)) {
+    const boxes = zoneFilter.querySelectorAll('input[type="checkbox"]');
+    const allowed = new Set(s.zones.map(String));
+    for (let i = 0; i < boxes.length; i++) {
+      boxes[i].checked = allowed.has(boxes[i].value);
+    }
+  }
+
+  if (s.frequency) {
+    const f = s.frequency;
+    if (f.interval != null) { freqInterval.value = f.interval; freqIntVal.textContent = f.interval + ' min'; }
+    if (f.start    != null) { freqStart.value    = f.start;    freqStartVal.textContent = fmt(f.start); }
+    if (f.end      != null) { freqEnd.value      = f.end;      freqEndVal.textContent = fmt(f.end); }
+    if (f.min_avg  != null) {
+      freqCutoffNum.value = f.min_avg;
+      freqCutoff.value    = Math.min(5, f.min_avg);
+    }
+  }
+
+  if (s.overrides && typeof s.overrides === 'object') {
+    for (const k of Object.keys(manualOverrides)) delete manualOverrides[k];
+    for (const [k, v] of Object.entries(s.overrides)) {
+      if (v === 'show' || v === 'hide') manualOverrides[k] = v;
+    }
+  }
+
+  if (s.map) {
+    const lat  = parseFloat(s.map.lat);
+    const lon  = parseFloat(s.map.lon);
+    const zoom = parseInt(s.map.zoom, 10);
+    if (!isNaN(lat) && !isNaN(lon) && !isNaN(zoom)) {
+      map.setView([lat, lon], zoom);
+    }
+  }
+}
+
+function settingsToYaml(s) {
+  return window.jsyaml.dump(s, { lineWidth: -1, noRefs: true });
+}
+
+function settingsFromYaml(text) {
+  return window.jsyaml.load(text);
+}
+
+// Compact JSON → base64url (no padding).
+function settingsToUrlFragment(s) {
+  const json = JSON.stringify(s);
+  const b64 = btoa(unescape(encodeURIComponent(json)));
+  return 's=' + b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+function settingsFromUrlFragment(frag) {
+  if (!frag.startsWith('s=')) return null;
+  try {
+    const b64 = frag.slice(2).replace(/-/g, '+').replace(/_/g, '/');
+    const json = decodeURIComponent(escape(atob(b64)));
+    return JSON.parse(json);
+  } catch (e) { return null; }
+}
+
+function saveToLocalStorage() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(collectSettings()));
+  } catch (e) { /* quota exceeded, ignore */ }
+}
+
+function triggerDownload(filename, text) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([text], { type: 'text/yaml' }));
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+stateSaveBtn.addEventListener('click', function () {
+  triggerDownload('jetlagcze-settings.yaml', settingsToYaml(collectSettings()));
+});
+
+stateLoadBtn.addEventListener('click', function () {
+  stateLoadFile.value = '';
+  stateLoadFile.click();
+});
+
+stateLoadFile.addEventListener('change', function () {
+  const file = stateLoadFile.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    try {
+      const s = settingsFromYaml(e.target.result);
+      applySettings(s);
+      applyFilter();
+      saveToLocalStorage();
+    } catch (err) {
+      alert('Could not parse YAML: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+});
+
+stateShareBtn.addEventListener('click', function () {
+  const frag = settingsToUrlFragment(collectSettings());
+  const url = location.href.split('#')[0] + '#' + frag;
+  navigator.clipboard.writeText(url).then(function () {
+    stateShareBtn.textContent = 'Copied!';
+    setTimeout(function () { stateShareBtn.textContent = 'Share URL'; }, 2000);
+  }).catch(function () {
+    prompt('Share URL (copy manually):', url);
+  });
+});
+
+stateResetBtn.addEventListener('click', function () {
+  localStorage.removeItem(STORAGE_KEY);
+  location.hash = '';
+  location.reload();
 });
 
 // ── Events ────────────────────────────────────────────────────────────────────
@@ -589,6 +748,27 @@ freqCutoffNum.addEventListener('input', () => {
     }
 
     status.textContent = 'Loaded ' + count + ' stops';
+
+    // Restore state: URL hash takes priority, then localStorage.
+    const hash = location.hash.slice(1); // strip leading '#'
+    let restored = null;
+    if (hash.startsWith('preset:')) {
+      const name = hash.slice('preset:'.length).replace(/[^a-zA-Z0-9_-]/g, '');
+      try {
+        const pr = await fetch('./presets/' + name + '.yaml');
+        if (pr.ok) restored = settingsFromYaml(await pr.text());
+      } catch (e) { console.warn('Could not load preset:', e); }
+    } else if (hash.startsWith('s=')) {
+      restored = settingsFromUrlFragment(hash);
+    }
+    if (!restored) {
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) restored = JSON.parse(stored);
+      } catch (e) { /* ignore */ }
+    }
+    if (restored) applySettings(restored);
+
     applyFilter();
 
     // Load departure-times data in the background.

@@ -229,12 +229,26 @@
     </div>
   </div>
 
+  <div class="pg">
+    <div class="pg-title">State</div>
+    <div class="pg-row">
+      <button class="pg-btn" id="state-save">Save YAML</button>
+      <button class="pg-btn" id="state-load-btn">Load YAML</button>
+      <input type="file" id="state-load-file" accept=".yaml,.yml" style="display:none" />
+    </div>
+    <div class="pg-row">
+      <button class="pg-btn" id="state-share">Share URL</button>
+      <button class="pg-btn" id="state-reset">Reset</button>
+    </div>
+  </div>
+
 </div>
 
 <div id="map"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<script src="https://unpkg.com/js-yaml@4/dist/js-yaml.min.js"></script>
 
 <!-- Map is initialised here so it renders even if the WASM module fails to load -->
 <script>
