@@ -20,3 +20,5 @@ you may check the data in `hacks/freq-full.txt` whether your results are similar
 
 Also add another slider, to set a lower cutoff for the average, by default on 2,
 and display only stops where the average is at least that cutoff.
+Range: 0–5, step 0.1. Also show an explicit number input that stays in sync
+with the slider and allows typing a precise value directly.

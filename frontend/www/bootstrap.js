@@ -16,7 +16,7 @@ const freqStartVal    = document.getElementById('freq-start-val');
 const freqEnd         = document.getElementById('freq-end');
 const freqEndVal      = document.getElementById('freq-end-val');
 const freqCutoff      = document.getElementById('freq-cutoff');
-const freqCutoffVal   = document.getElementById('freq-cutoff-val');
+const freqCutoffNum   = document.getElementById('freq-cutoff-num');
 
 const map          = window.map;
 const clusterGroup = window.clusterGroup;
@@ -306,7 +306,12 @@ freqEnd.addEventListener('input', () => {
   if (timesReady && parseFloat(freqCutoff.value) > 0) applyFilter();
 });
 freqCutoff.addEventListener('input', () => {
-  freqCutoffVal.textContent = freqCutoff.value;
+  freqCutoffNum.value = freqCutoff.value;
+  if (timesReady) applyFilter();
+});
+freqCutoffNum.addEventListener('input', () => {
+  const v = Math.min(5, Math.max(0, parseFloat(freqCutoffNum.value) || 0));
+  freqCutoff.value = v;
   if (timesReady) applyFilter();
 });
 
