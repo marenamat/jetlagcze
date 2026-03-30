@@ -51,6 +51,8 @@
 - Do not ask for _any_ git operations. The local repository is completely yours.
 - Never touch `hacks/` but you may read it.
 - Whenever you need a package installed, ask for it.
+- Whenever you are at or above 90% tokens consumed, suspend all jobs and wait
+  for session reset.
 
 # Tasks
 
