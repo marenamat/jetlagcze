@@ -20,72 +20,104 @@
       font-size: 14px;
     }
 
-    #controls {
+    /* ── Topbar ──────────────────────────────────────────────────────── */
+
+    #topbar {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 6px 10px;
-      background: #f4f4f4;
-      border-bottom: 1px solid #ccc;
-      flex-wrap: wrap;
+      gap: 8px;
+      padding: 4px 10px;
+      background: #e8e8e8;
+      border-bottom: 1px solid #bbb;
+      flex-shrink: 0;
     }
 
-    #controls label { font-weight: bold; white-space: nowrap; }
-    #controls .sep { color: #999; }
-
-    #controls input[type="date"] {
-      padding: 3px 6px;
-      border: 1px solid #aaa;
-      border-radius: 3px;
-    }
-
-    #controls input[type="range"] { width: 80px; }
-    #controls .range-val { min-width: 3em; text-align: right; color: #333; }
-
-    #clear-btn {
-      padding: 3px 10px;
+    #panel-toggle {
+      padding: 3px 9px;
       cursor: pointer;
       border: 1px solid #aaa;
       border-radius: 3px;
       background: #fff;
+      font-size: 15px;
+      line-height: 1;
     }
-    #clear-btn:hover { background: #e8e8e8; }
+    #panel-toggle:hover { background: #ddd; }
 
-    #zone-filter { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
-    #zone-filter label { font-weight: normal; }
+    #status { color: #555; white-space: nowrap; margin-left: auto; }
 
-    #status { color: #555; margin-left: auto; white-space: nowrap; }
+    /* ── Slide-out panel ─────────────────────────────────────────────── */
 
-    #map { flex: 1; }
+    #panel {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      background: #f4f4f4;
+      border-bottom: 1px solid #ccc;
+      overflow: hidden;
+      max-height: 400px;
+      transition: max-height 0.2s ease, border-width 0.2s ease;
+      flex-shrink: 0;
+    }
 
-    /* Frequency stats popup */
-    .freq-stats table { border-collapse: collapse; margin-top: 6px; font-size: 13px; }
-    .freq-stats td { padding: 1px 6px; }
-    .freq-stats td:first-child { color: #555; }
-    .freq-stats td:last-child { font-variant-numeric: tabular-nums; }
-    .freq-loading { color: #888; font-style: italic; }
+    #panel.collapsed {
+      max-height: 0;
+      border-bottom-width: 0;
+    }
 
-    /* Expand/collapse buttons in stop popups */
-    .expand-btn, .collapse-btn {
-      margin-top: 4px;
+    /* Each logical group is a column */
+    .pg {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      padding: 7px 12px;
+      border-right: 1px solid #ddd;
+      min-width: 0;
+    }
+    .pg:last-child { border-right: none; }
+
+    .pg-title {
+      font-size: 11px;
+      font-weight: bold;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .pg-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .pg label { font-weight: bold; white-space: nowrap; }
+    .pg label.light { font-weight: normal; }
+    .sep { color: #bbb; }
+
+    input[type="date"] {
+      padding: 2px 5px;
+      border: 1px solid #aaa;
+      border-radius: 3px;
+    }
+
+    input[type="range"] { width: 80px; }
+    .rv { min-width: 3.2em; text-align: right; color: #333; font-variant-numeric: tabular-nums; }
+
+    #clear-btn, .pg-btn {
       padding: 2px 8px;
       cursor: pointer;
       border: 1px solid #aaa;
       border-radius: 3px;
       background: #fff;
-      font-size: 12px;
     }
-    .expand-btn:hover, .collapse-btn:hover { background: #e8e8e8; }
+    #clear-btn:hover, .pg-btn:hover { background: #e0e0e0; }
 
-    /* Stop override buttons */
-    .stop-override { margin-top: 6px; display: flex; gap: 4px; }
-    .ovr-btn { padding: 2px 7px; font-size: 12px; cursor: pointer; border: 1px solid #aaa; border-radius: 3px; background: #fff; }
-    .ovr-btn:hover { background: #e8e8e8; }
-    .ovr-btn.active { background: #c8e0ff; border-color: #5599dd; font-weight: bold; }
+    #zone-filter { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
+    #zone-filter label { font-weight: normal; }
 
-    /* Stop search */
+    /* Search */
     #search-wrap { position: relative; display: inline-block; }
-    #stop-search { padding: 3px 6px; border: 1px solid #aaa; border-radius: 3px; width: 160px; }
+    #stop-search { padding: 2px 6px; border: 1px solid #aaa; border-radius: 3px; width: 150px; }
     #search-dropdown {
       display: none; position: absolute; top: 100%; left: 0; z-index: 9999;
       background: #fff; border: 1px solid #aaa; border-radius: 3px;
@@ -94,48 +126,109 @@
     }
     .search-item { padding: 4px 8px; cursor: pointer; font-size: 13px; white-space: nowrap; }
     .search-item:hover { background: #eee; }
+
+    /* ── Map ─────────────────────────────────────────────────────────── */
+
+    #map { flex: 1; min-height: 0; }
+
+    /* ── Popups ──────────────────────────────────────────────────────── */
+
+    .freq-stats table { border-collapse: collapse; margin-top: 6px; font-size: 13px; }
+    .freq-stats td { padding: 1px 6px; }
+    .freq-stats td:first-child { color: #555; }
+    .freq-stats td:last-child { font-variant-numeric: tabular-nums; }
+    .freq-loading { color: #888; font-style: italic; }
+
+    .expand-btn, .collapse-btn {
+      margin-top: 4px; padding: 2px 8px; cursor: pointer;
+      border: 1px solid #aaa; border-radius: 3px;
+      background: #fff; font-size: 12px;
+    }
+    .expand-btn:hover, .collapse-btn:hover { background: #e8e8e8; }
+
+    .stop-override { margin-top: 6px; display: flex; gap: 4px; }
+    .ovr-btn { padding: 2px 7px; font-size: 12px; cursor: pointer; border: 1px solid #aaa; border-radius: 3px; background: #fff; }
+    .ovr-btn:hover { background: #e8e8e8; }
+    .ovr-btn.active { background: #c8e0ff; border-color: #5599dd; font-weight: bold; }
+
   </style>
 </head>
 <body>
 
-<div id="controls">
-  <label for="date-from">Days:</label>
-  <input type="date" id="date-from" />
-  <span class="sep">–</span>
-  <input type="date" id="date-to" />
-  <button id="clear-btn">Clear</button>
-  <label style="font-weight:normal"><input type="checkbox" id="show-pseudo" /> Show pseudo-stops</label>
-  <label style="font-weight:normal"><input type="checkbox" id="coverage-toggle" checked /> Coverage</label>
-  <span class="sep">|</span>
-  <label>Zones:</label>
-  <span id="zone-filter">Loading…</span>
+<!-- Thin topbar: just the toggle and status -->
+<div id="topbar">
+  <button id="panel-toggle" title="Toggle filters">&#9776;</button>
+  <span id="status"></span>
+</div>
 
-  <span class="sep">|</span>
+<!-- Slide-out panel with grouped controls -->
+<div id="panel">
 
-  <label for="freq-interval">Interval:</label>
-  <input type="range" id="freq-interval" min="5" max="120" step="5" value="60" />
-  <span class="range-val" id="freq-interval-val">60 min</span>
-
-  <label for="freq-start">Window:</label>
-  <input type="range" id="freq-start" min="0" max="23" step="1" value="9" />
-  <span class="range-val" id="freq-start-val">9:00</span>
-  <span class="sep">–</span>
-  <input type="range" id="freq-end" min="0" max="23" step="1" value="21" />
-  <span class="range-val" id="freq-end-val">21:00</span>
-
-  <label for="freq-cutoff">Min avg:</label>
-  <input type="range" id="freq-cutoff" min="0" max="5" step="0.1" value="2" />
-  <input type="number" id="freq-cutoff-num" min="0" max="5" step="0.1" value="2"
-         style="width:4em;padding:2px 4px;border:1px solid #aaa;border-radius:3px;" />
-
-  <span class="sep">|</span>
-  <label for="stop-search">Search:</label>
-  <div id="search-wrap">
-    <input type="text" id="stop-search" placeholder="Stop name…" autocomplete="off" />
-    <div id="search-dropdown"></div>
+  <div class="pg">
+    <div class="pg-title">Date</div>
+    <div class="pg-row">
+      <label for="date-from">From:</label>
+      <input type="date" id="date-from" />
+    </div>
+    <div class="pg-row">
+      <label for="date-to">To:</label>
+      <input type="date" id="date-to" />
+    </div>
+    <div class="pg-row">
+      <button id="clear-btn">Clear</button>
+    </div>
   </div>
 
-  <span id="status"></span>
+  <div class="pg">
+    <div class="pg-title">Display</div>
+    <div class="pg-row">
+      <label class="light"><input type="checkbox" id="show-pseudo" /> Pseudo-stops</label>
+    </div>
+    <div class="pg-row">
+      <label class="light"><input type="checkbox" id="coverage-toggle" checked /> Coverage overlay</label>
+    </div>
+  </div>
+
+  <div class="pg">
+    <div class="pg-title">Zones</div>
+    <div class="pg-row">
+      <span id="zone-filter">Loading…</span>
+    </div>
+  </div>
+
+  <div class="pg">
+    <div class="pg-title">Frequency</div>
+    <div class="pg-row">
+      <label for="freq-interval">Interval:</label>
+      <input type="range" id="freq-interval" min="5" max="120" step="5" value="60" />
+      <span class="rv" id="freq-interval-val">60 min</span>
+    </div>
+    <div class="pg-row">
+      <label for="freq-start">Window:</label>
+      <input type="range" id="freq-start" min="0" max="23" step="1" value="9" />
+      <span class="rv" id="freq-start-val">9:00</span>
+      <span class="sep">–</span>
+      <input type="range" id="freq-end" min="0" max="23" step="1" value="21" />
+      <span class="rv" id="freq-end-val">21:00</span>
+    </div>
+    <div class="pg-row">
+      <label for="freq-cutoff">Min avg:</label>
+      <input type="range" id="freq-cutoff" min="0" max="5" step="0.1" value="2" />
+      <input type="number" id="freq-cutoff-num" min="0" max="5" step="0.1" value="2"
+             style="width:4em;padding:2px 4px;border:1px solid #aaa;border-radius:3px;" />
+    </div>
+  </div>
+
+  <div class="pg">
+    <div class="pg-title">Search</div>
+    <div class="pg-row">
+      <div id="search-wrap">
+        <input type="text" id="stop-search" placeholder="Stop name…" autocomplete="off" />
+        <div id="search-dropdown"></div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <div id="map"></div>
@@ -152,6 +245,10 @@
   }).addTo(window.map);
   window.clusterGroup = L.markerClusterGroup({ chunkedLoading: true });
   window.map.addLayer(window.clusterGroup);
+
+  document.getElementById('panel-toggle').addEventListener('click', function () {
+    document.getElementById('panel').classList.toggle('collapsed');
+  });
 </script>
 
 <script type="module" src="bootstrap.js"></script>
