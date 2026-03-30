@@ -27,3 +27,6 @@ For all show/hide purposes, the frequency is a sum over all stops of the same na
 
 The time interval allowed setting should be between 2:00 and 32:00, even though
 day has only 24 hours, because the night trips are counted to the previous day.
+
+Also add a view of the actual departures from that stop, in the form of
+"which line" and "destination". That list may be long, do it scrollable.
