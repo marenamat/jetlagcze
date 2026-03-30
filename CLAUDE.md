@@ -12,6 +12,8 @@
 - Dump any context which you don't immediately need, and load that context
   whenever you need it back. Don't forget to commit that into Git, preferably
   with the relevant work.
+- Dump all session "and don't ask again" and reload that on session restart.
+- You may also make locally relevant tools inside your context and reuse them.
 - The context should be formatted as YAML if possible.
 
 # Workflow
@@ -48,6 +50,7 @@
 - If something is too big, split that into the context files.
 - Do not ask for _any_ git operations. The local repository is completely yours.
 - Never touch `hacks/` but you may read it.
+- Whenever you need a package installed, ask for it.
 
 # Tasks
 
