@@ -1,6 +1,17 @@
-updated: 2026-03-30T09:00Z
+updated: 2026-03-30T10:30Z
 
 branches:
+  - name: mq-claude-pid-stops-hide-manually
+    task: t-pid-stops-hide-manually
+    status: ready-for-review
+    summary: >
+      Three-state per-stop override: always show / always hide / default (by filters).
+      Popup buttons let user pin or hide any stop. Pinned stops bypass all filters.
+      Hidden stops rendered as gray ghost markers (not in coverage calc).
+      Stop name search: dropdown sorted by distance from map center, up to 20 results.
+      Clicking a result shows cyan marker + popup without affecting coverage.
+      lib.rs: search_stops() added.
+
   - name: mq-claude-pid-stops-gui-readme
     task: t-pid-stops-gui
     status: ready-for-review

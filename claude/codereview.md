@@ -10,3 +10,4 @@ pid-stops-mark-too-far (coverage overlay), pid-stops-gui-frequency
 | `mq-claude-optimize-cbor` | t-optimize-cbor | (needs push) | Integer keys, fixed-point coords, tag-100 dates, zone enum |
 | `mq-claude-pid-stops-gui-merge-same-name` | t-pid-stops-gui | (needs push) | Merge same-name stops into one marker; expand/collapse in popup |
 | `mq-claude-freq-cutoff-adjust` | t-pid-stops-gui-frequency | (needs push) | Cutoff: range 0-5 step 0.1, add synced number input for precise entry |
+| `mq-claude-pid-stops-hide-manually` | t-pid-stops-hide-manually | (needs push) | Three-state per-stop override (always show/hide/default), ghost layer for hidden stops, stop name search |
