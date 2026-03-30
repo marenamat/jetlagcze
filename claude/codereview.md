@@ -9,4 +9,4 @@ pid-stops-mark-too-far (coverage overlay), pid-stops-gui-frequency
 | `mq-claude-pid-stops-gui-readme` | t-pid-stops-gui | n/a | Add map link to README |
 | `mq-claude-optimize-cbor` | t-optimize-cbor | (needs push) | Integer keys, fixed-point coords, tag-100 dates, zone enum |
 | `mq-claude-pid-stops-gui-merge-same-name` | t-pid-stops-gui | (needs push) | Merge same-name stops into one marker; expand/collapse in popup |
-| `mq-claude-freq-cutoff` | t-pid-stops-gui-frequency | (needs push) | Min-avg cutoff slider: hide stops below departure frequency threshold |
+| `mq-claude-freq-cutoff-adjust` | t-pid-stops-gui-frequency | (needs push) | Cutoff: range 0-5 step 0.1, add synced number input for precise entry |
