@@ -24,6 +24,7 @@ Range: 0–5, step 0.1. Also show an explicit number input that stays in sync
 with the slider and allows typing a precise value directly. That value may be higher than the top range limit, should not be clamped.
 
 For all show/hide purposes, the frequency is a sum over all stops of the same name.
+Show this summary frequency in the stop window when not expanded into instances.
 
 The time interval allowed setting should be between 2:00 and 32:00, even though
 day has only 24 hours, because the night trips are counted to the previous day.
