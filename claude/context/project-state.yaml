@@ -1,4 +1,4 @@
-updated: 2026-03-30T00:30Z
+updated: 2026-03-30T09:00Z
 
 branches:
   - name: mq-claude-pid-stops-gui-readme
@@ -18,6 +18,17 @@ branches:
       granularity, default 9-21). Popup shows stats table.
       Zone filter integrated (zones + frequency in one UI).
 
+  - name: mq-claude-optimize-cbor
+    task: t-optimize-cbor
+    status: ready-for-review
+    summary: >
+      process_gtfs.py: integer map keys (0-6), fixed-point lat/lon ×1e6,
+      CBOR tag 100 dates (days since epoch), zone enum (P=0,0=1,B=2,1-13=3-15,-=16).
+      lib.rs: complete rewrite using ciborium::value::Value manual parser.
+      doc/pid_stops.cddl: CDDL (RFC 8610) machine-readable schema.
+      doc/pid_stops.md: human-readable format documentation.
+      Note: frequency branch (load_times) still uses text-key serde format.
+
 merged_branches:
   - mq-claude-pid-data
   - mq-claude-pid-stops
@@ -25,6 +36,12 @@ merged_branches:
   - mq-claude-pid-data-on-script-change
   - mq-claude-deploy-frontend
   - mq-claude-pid-stops-zones
+  - mq-claude-zone-sort
+  - mq-claude-default-today
+
+tasks:
+  - t-reauthor: DONE (all unmerged commits already authored as vibecoding-claude@jmq.cz)
+  - t-optimize-cbor: IN PROGRESS (branch ready, not yet pushed)
 
 design_decisions:
   - pid_stops.cbor: stop positions + active dates + zone + pseudo flag; loaded eagerly
@@ -38,5 +55,7 @@ design_decisions:
   - Zone filter: comma-separated zone_id split into individual zones; empty zone = "-"
   - deploy.yml triggers on frontend/ changes; pid-data.yml triggers on script changes
   - First fix bugs, then think about features
+  - CBOR format: integer keys (saves ~50 bytes/stop), fixed-point coords, tag-100 dates
+  - load_times() still uses serde text-key format (not yet updated to integer keys)
 
 open_questions: []
