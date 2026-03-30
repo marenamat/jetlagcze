@@ -1,4 +1,4 @@
-updated: 2026-03-30T15:00Z
+updated: 2026-03-30T16:00Z
 
 branches:
   - name: mq-claude-optimize-cbor
@@ -12,14 +12,18 @@ branches:
       doc/pid_stops.md: human-readable format documentation.
       Note: frequency branch (load_times) still uses text-key serde format.
 
-  - name: mq-claude-pid-stops-fix-override-name
-    task: t-pid-stops-hide-manually
+  - name: mq-claude-pid-save
+    task: t-pid-save
     status: ready-for-review
     summary: >
-      bootstrap.js: fix manual overrides, ghost layer, freq cutoff, and search
-      deduplication to key by stop name (not stop ID), so all physical instances
-      of a merged stop are handled together.
-      freqCutoffNum input now allows values above slider range (5).
+      bootstrap.js + index.html: save/restore all settings as YAML.
+      Auto-save to localStorage on every filter change; restore on page load.
+      Save button downloads settings.yaml (js-yaml CDN).
+      Load button reads a local .yaml file.
+      Share button: encodes settings as base64url JSON in URL #s=...
+      Reset button: clears localStorage and reloads.
+      Preset support: #preset:NAME loads ./presets/NAME.yaml from repo.
+      frontend/www/presets/example.yaml added as template.
 
 merged_branches:
   - mq-claude-pid-data
@@ -38,10 +42,13 @@ merged_branches:
   - mq-claude-pid-stops-refactor-menu
   - mq-claude-freq-fix-interval
   - mq-claude-pid-stops-gui-readme
+  - mq-claude-pid-stops-fix-override-name
 
 tasks:
   - t-reauthor: DONE (all unmerged commits already authored as vibecoding-claude@jmq.cz)
   - t-optimize-cbor: READY-FOR-REVIEW (branch mq-claude-optimize-cbor)
+  - t-pid-save: READY-FOR-REVIEW (branch mq-claude-pid-save)
+  - t-pid-stops-fix-override-name: MERGED (always-show/hide HTML escaping fix)
 
 design_decisions:
   - pid_stops.cbor: stop positions + active dates + zone + pseudo flag; loaded eagerly
@@ -58,5 +65,7 @@ design_decisions:
   - CBOR format: integer keys (saves ~50 bytes/stop), fixed-point coords, tag-100 dates
   - load_times() still uses serde text-key format (not yet updated to integer keys)
   - Manual overrides and freq cutoff keyed by stop name (not ID) to handle merged stops
+  - Settings saved as YAML; share URL uses base64url-encoded compact JSON in #s=...
+  - GitHub presets: frontend/www/presets/NAME.yaml, loaded via #preset:NAME in URL
 
 open_questions: []
