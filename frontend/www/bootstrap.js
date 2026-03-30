@@ -2,12 +2,13 @@ import init, { load_stops, filter_stops, get_date_bounds, get_zones } from './pk
 
 const DEFAULT_ZONES = ['P', '0', 'B'];
 
-const status     = document.getElementById('status');
-const dateFrom   = document.getElementById('date-from');
-const dateTo     = document.getElementById('date-to');
-const clearBtn   = document.getElementById('clear-btn');
-const showPseudo = document.getElementById('show-pseudo');
-const zoneFilter = document.getElementById('zone-filter');
+const status          = document.getElementById('status');
+const dateFrom        = document.getElementById('date-from');
+const dateTo          = document.getElementById('date-to');
+const clearBtn        = document.getElementById('clear-btn');
+const showPseudo      = document.getElementById('show-pseudo');
+const zoneFilter      = document.getElementById('zone-filter');
+const coverageToggle  = document.getElementById('coverage-toggle');
 
 const map          = window.map;
 const clusterGroup = window.clusterGroup;
@@ -36,6 +37,113 @@ function selectedZones() {
   return result;
 }
 
+// ── Coverage overlay ──────────────────────────────────────────────────────────
+//
+// Draws a semi-transparent red layer over map areas farther than 1 km from
+// any currently displayed stop. Uses canvas compositing: fill red, then erase
+// 1 km circles around each stop (destination-out).
+
+const CoverageLayer = L.Layer.extend({
+  initialize() {
+    this._stops   = [];
+    this._enabled = true;
+  },
+
+  onAdd(map) {
+    this._map    = map;
+    this._canvas = L.DomUtil.create('canvas', 'coverage-canvas');
+    this._canvas.style.cssText = 'position:absolute;pointer-events:none;';
+    map.getPanes().overlayPane.appendChild(this._canvas);
+    map.on('moveend zoomend resize', this._redraw, this);
+    this._redraw();
+  },
+
+  onRemove(map) {
+    map.getPanes().overlayPane.removeChild(this._canvas);
+    map.off('moveend zoomend resize', this._redraw, this);
+    this._canvas = null;
+  },
+
+  setStops(stops) {
+    this._stops = stops;
+    if (this._canvas) this._redraw();
+  },
+
+  setEnabled(enabled) {
+    this._enabled = enabled;
+    if (this._canvas) this._redraw();
+  },
+
+  /** Convert meters to canvas pixels at the given latitude. */
+  _metersToPixels(meters, lat) {
+    const zoom = this._map.getZoom();
+    const latRad = lat * Math.PI / 180;
+    const metersPerPixel = 156543.03392 * Math.cos(latRad) / Math.pow(2, zoom);
+    return meters / metersPerPixel;
+  },
+
+  _redraw() {
+    if (!this._canvas) return;
+    const map    = this._map;
+    const size   = map.getSize();
+    const canvas = this._canvas;
+
+    canvas.width  = size.x;
+    canvas.height = size.y;
+
+    // Align canvas with map container top-left (accounting for pane offset).
+    const topLeft = map.containerPointToLayerPoint([0, 0]);
+    L.DomUtil.setPosition(canvas, topLeft);
+
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, size.x, size.y);
+
+    if (!this._enabled) return;
+
+    // Fill entire canvas with semi-transparent red.
+    ctx.fillStyle = 'rgba(200,0,0,0.35)';
+    ctx.fillRect(0, 0, size.x, size.y);
+
+    if (this._stops.length === 0) return;
+
+    // Erase 1 km circles around each displayed stop using destination-out.
+    // This makes covered areas fully transparent, revealing the map beneath.
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.fillStyle = 'rgba(0,0,0,1)';
+
+    const bounds  = map.getBounds();
+    const south   = bounds.getSouth();
+    const north   = bounds.getNorth();
+    const west    = bounds.getWest();
+    const east    = bounds.getEast();
+    // Rough padding: 1 km ≈ 0.009° lat, use 0.015° for safety.
+    const PAD = 0.015;
+
+    for (let i = 0; i < this._stops.length; i++) {
+      const s = this._stops[i];
+
+      // Coarse geographic filter: skip stops definitely beyond 1 km of viewport.
+      if (s.lat < south - PAD || s.lat > north + PAD) continue;
+      if (s.lon < west  - PAD || s.lon > east  + PAD) continue;
+
+      const pt = map.latLngToContainerPoint([s.lat, s.lon]);
+      const r  = this._metersToPixels(1000, s.lat);
+
+      // Skip circles that don't overlap the canvas at all.
+      if (pt.x + r < 0 || pt.x - r > size.x) continue;
+      if (pt.y + r < 0 || pt.y - r > size.y) continue;
+
+      ctx.beginPath();
+      ctx.arc(pt.x, pt.y, r, 0, 2 * Math.PI);
+      ctx.fill();
+    }
+
+    ctx.globalCompositeOperation = 'source-over';
+  },
+});
+
+const coverageLayer = new CoverageLayer();
+
 // ── Rendering ─────────────────────────────────────────────────────────────────
 
 function renderStops(stops) {
@@ -46,6 +154,7 @@ function renderStops(stops) {
     clusterGroup.addLayer(marker);
   }
   status.textContent = stops.length + ' stop' + (stops.length !== 1 ? 's' : '');
+  coverageLayer.setStops(stops);
 }
 
 function applyFilter() {
@@ -93,12 +202,18 @@ clearBtn.addEventListener('click', function () {
 showPseudo.addEventListener('change', function () {
   applyFilter();
 });
+coverageToggle.addEventListener('change', function () {
+  coverageLayer.setEnabled(coverageToggle.checked);
+});
 
 // ── Bootstrap ─────────────────────────────────────────────────────────────────
 
 (async function () {
   try {
     await init();
+
+    // Add coverage layer to map (default on).
+    coverageLayer.addTo(map);
 
     status.textContent = 'Fetching stop data\u2026';
     const res = await fetch('./pid_stops.cbor');
