@@ -64,7 +64,24 @@ pub fn get_date_bounds() -> JsValue {
     })
 }
 
-/// Return the sorted list of distinct individual zone IDs across all loaded stops.
+/// Zone sort order: P, 0, B, 1, 2, …, 13, then "-", then anything else.
+fn zone_order(z: &str) -> (u8, i32) {
+    match z {
+        "P"  => (0, 0),
+        "0"  => (0, 1),
+        "B"  => (0, 2),
+        "-"  => (2, 0),
+        _    => {
+            if let Ok(n) = z.parse::<i32>() {
+                (1, n)
+            } else {
+                (3, 0)
+            }
+        }
+    }
+}
+
+/// Return zone IDs sorted by distance from Prague: P, 0, B, 1, 2, …, then "-".
 /// Comma-separated zones (e.g. "6,7") are split into separate entries.
 #[wasm_bindgen]
 pub fn get_zones() -> JsValue {
@@ -83,9 +100,10 @@ pub fn get_zones() -> JsValue {
                 }
             }
         }
-        let mut zones: Vec<&str> = seen.iter().map(String::as_str).collect();
-        zones.sort_unstable();
-        serde_wasm_bindgen::to_value(&zones).unwrap_or(JsValue::NULL)
+        let mut zones: Vec<String> = seen.into_iter().collect();
+        zones.sort_by(|a, b| zone_order(a).cmp(&zone_order(b)));
+        let zone_refs: Vec<&str> = zones.iter().map(String::as_str).collect();
+        serde_wasm_bindgen::to_value(&zone_refs).unwrap_or(JsValue::NULL)
     })
 }
 
