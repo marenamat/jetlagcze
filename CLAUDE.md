@@ -49,6 +49,7 @@
   then execute it.
 - If something is too big, split that into the context files.
 - Do not ask for _any_ git operations. The local repository is completely yours.
+- Never ask for `sed`, `grep`, `cat`, `cut`, `sort` or similar unix tools.
 - Never touch `hacks/` but you may read it.
 - Whenever you need a package installed, ask for it.
 - Whenever you are at or above 90% tokens consumed, suspend all jobs and wait
