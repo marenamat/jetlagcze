@@ -218,7 +218,9 @@ function buildPopup(stop, dates) {
   const { interval, startH, endH } = freqParams();
   const zoneTag = stop.zone ? ' [' + stop.zone + ']' : '';
   const cur = manualOverrides[stop.name] || 'default';
-  const sname = JSON.stringify(stop.name);
+  // JSON.stringify produces "name" with double quotes; escape them for use
+  // inside an onclick="..." HTML attribute so the parser doesn't truncate early.
+  const sname = JSON.stringify(stop.name).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
 
   const btnShow  = `<button class="ovr-btn${cur === 'show' ? ' active' : ''}" onclick="window.setStopOverride(${sname},'show')">Always show</button>`;
   const btnHide  = `<button class="ovr-btn${cur === 'hide' ? ' active' : ''}" onclick="window.setStopOverride(${sname},'hide')">Always hide</button>`;
