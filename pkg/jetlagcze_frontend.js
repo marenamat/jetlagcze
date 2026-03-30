@@ -31,7 +31,7 @@ export function get_date_bounds() {
 }
 
 /**
- * Return the sorted list of distinct individual zone IDs across all loaded stops.
+ * Return zone IDs sorted by distance from Prague: P, 0, B, 1, 2, …, then "-".
  * Comma-separated zones (e.g. "6,7") are split into separate entries.
  * @returns {any}
  */
