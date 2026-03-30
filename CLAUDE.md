@@ -54,6 +54,8 @@
 - Whenever you need a package installed, ask for it.
 - Whenever you are at or above 90% tokens consumed, suspend all jobs and wait
   for session reset.
+- Never ask for scheduling tasks based on this file or the stored context.
+  Always use local scheduling unless explicitly requested as remote.
 
 # Tasks
 
