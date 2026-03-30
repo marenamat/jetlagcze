@@ -188,11 +188,11 @@ const ICON_SEARCH = makeCircleIcon('#00aaff', 14);
 
 // ── Manual override ───────────────────────────────────────────────────────────
 
-window.setStopOverride = function (id, state) {
+window.setStopOverride = function (name, state) {
   if (state === 'default') {
-    delete manualOverrides[id];
+    delete manualOverrides[name];
   } else {
-    manualOverrides[id] = state;
+    manualOverrides[name] = state;
   }
   map.closePopup();
   applyFilter();
@@ -217,12 +217,12 @@ function freqParams() {
 function buildPopup(stop, dates) {
   const { interval, startH, endH } = freqParams();
   const zoneTag = stop.zone ? ' [' + stop.zone + ']' : '';
-  const cur = manualOverrides[stop.id] || 'default';
-  const sid = JSON.stringify(stop.id);
+  const cur = manualOverrides[stop.name] || 'default';
+  const sname = JSON.stringify(stop.name);
 
-  const btnShow  = `<button class="ovr-btn${cur === 'show' ? ' active' : ''}" onclick="window.setStopOverride(${sid},'show')">Always show</button>`;
-  const btnHide  = `<button class="ovr-btn${cur === 'hide' ? ' active' : ''}" onclick="window.setStopOverride(${sid},'hide')">Always hide</button>`;
-  const btnReset = cur !== 'default' ? ` <button class="ovr-btn" onclick="window.setStopOverride(${sid},'default')">Reset</button>` : '';
+  const btnShow  = `<button class="ovr-btn${cur === 'show' ? ' active' : ''}" onclick="window.setStopOverride(${sname},'show')">Always show</button>`;
+  const btnHide  = `<button class="ovr-btn${cur === 'hide' ? ' active' : ''}" onclick="window.setStopOverride(${sname},'hide')">Always hide</button>`;
+  const btnReset = cur !== 'default' ? ` <button class="ovr-btn" onclick="window.setStopOverride(${sname},'default')">Reset</button>` : '';
   const overrideRow = `<div class="stop-override">${btnShow} ${btnHide}${btnReset}</div>`;
 
   if (!timesReady) {
@@ -371,10 +371,9 @@ function renderStops(stops) {
 function renderGhostStops() {
   ghostLayer.clearLayers();
   const dates = currentDates();
-  for (const id of Object.keys(manualOverrides)) {
-    if (manualOverrides[id] !== 'hide') continue;
-    const s = allStopsById[id];
-    if (!s) continue;
+  // Collect all stops whose name is manually hidden, show each physical instance.
+  for (const s of Object.values(allStopsById)) {
+    if (manualOverrides[s.name] !== 'hide') continue;
     const marker = L.marker([s.lat, s.lon], { icon: ICON_GHOST });
     marker.bindPopup(() => buildPopup(s, dates));
     ghostLayer.addLayer(marker);
@@ -387,30 +386,36 @@ function applyFilter() {
   try {
     let stops = filter_stops(JSON.stringify(dates), JSON.stringify(zones), showPseudo.checked);
 
-    // Apply frequency cutoff: hide stops where avg departures < cutoff.
+    // Apply frequency cutoff: hide all stops of a given name when the sum of avg
+    // departures across all physical stops of that name is below the cutoff.
     // Only active when times data is loaded and cutoff > 0.
-    const cutoff = parseFloat(freqCutoff.value);
+    // Read from the number input (not slider) to support values above 5.
+    const cutoff = Math.max(0, parseFloat(freqCutoffNum.value) || 0);
     if (timesReady && cutoff > 0) {
       const { startH, endH, interval } = freqParams();
       const datesJson = JSON.stringify(dates);
-      stops = stops.filter(function (s) {
+      // Sum avg over all physical stops with the same name.
+      const nameSum = {};
+      for (const s of stops) {
         const stats = stop_stats(s.id, datesJson, startH * 60, endH * 60, interval);
-        return stats && stats.avg >= cutoff;
-      });
+        nameSum[s.name] = (nameSum[s.name] || 0) + (stats ? stats.avg : 0);
+      }
+      stops = stops.filter(s => (nameSum[s.name] || 0) >= cutoff);
     }
 
-    // Apply manual overrides.
-    const hideIds = new Set(Object.keys(manualOverrides).filter(id => manualOverrides[id] === 'hide'));
-    const showIds = new Set(Object.keys(manualOverrides).filter(id => manualOverrides[id] === 'show'));
+    // Apply manual overrides (keyed by stop name).
+    const hideNames = new Set(Object.keys(manualOverrides).filter(n => manualOverrides[n] === 'hide'));
+    const showNames = new Set(Object.keys(manualOverrides).filter(n => manualOverrides[n] === 'show'));
 
-    // Remove always-hide stops from normal results.
-    stops = stops.filter(s => !hideIds.has(s.id));
+    // Remove all stops whose name is always-hidden.
+    stops = stops.filter(s => !hideNames.has(s.name));
 
-    // Add always-show stops not already in results.
-    const presentIds = new Set(stops.map(s => s.id));
-    for (const id of showIds) {
-      if (!presentIds.has(id) && allStopsById[id]) {
-        stops.push(allStopsById[id]);
+    // Add all physical stops whose name is always-shown but not yet present.
+    const presentNames = new Set(stops.map(s => s.name));
+    for (const s of Object.values(allStopsById)) {
+      if (showNames.has(s.name) && !presentNames.has(s.name)) {
+        stops.push(s);
+        presentNames.add(s.name);
       }
     }
 
@@ -455,9 +460,19 @@ stopSearch.addEventListener('input', function () {
   const center = map.getCenter();
   const results = search_stops(q, center.lat, center.lng);
   if (!results || results.length === 0) { searchDropdown.style.display = 'none'; return; }
-  searchDropdown.innerHTML = '';
+  // Deduplicate by name — results are sorted by distance, so first hit per name
+  // is the closest instance. Show only one entry per logical stop name.
+  const seenNames = new Set();
+  const deduped = [];
   for (let i = 0; i < results.length; i++) {
-    const s = results[i];
+    if (!seenNames.has(results[i].name)) {
+      seenNames.add(results[i].name);
+      deduped.push(results[i]);
+    }
+  }
+  searchDropdown.innerHTML = '';
+  for (let i = 0; i < deduped.length; i++) {
+    const s = deduped[i];
     const div = document.createElement('div');
     div.className = 'search-item';
     div.textContent = s.name + (s.zone ? ' [' + s.zone + ']' : '');
@@ -517,8 +532,10 @@ freqCutoff.addEventListener('input', () => {
   if (timesReady) applyFilter();
 });
 freqCutoffNum.addEventListener('input', () => {
-  const v = Math.min(5, Math.max(0, parseFloat(freqCutoffNum.value) || 0));
-  freqCutoff.value = v;
+  // Slider is capped at 5, but the number input is not — allows precise values
+  // above the slider range.
+  const v = Math.max(0, parseFloat(freqCutoffNum.value) || 0);
+  freqCutoff.value = Math.min(5, v);
   if (timesReady) applyFilter();
 });
 
