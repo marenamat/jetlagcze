@@ -32,6 +32,12 @@ export function load_stops(cbor_bytes: Uint8Array): number;
 export function load_times(cbor_bytes: Uint8Array): number;
 
 /**
+ * Search stops by name (case-insensitive substring match).
+ * Returns up to 20 results sorted by distance from (center_lat, center_lon).
+ */
+export function search_stops(query: string, center_lat: number, center_lon: number): any;
+
+/**
  * Compute frequency statistics for a single stop over selected dates.
  *
  * - `stop_id`: the stop to analyse
@@ -56,10 +62,11 @@ export interface InitOutput {
     readonly get_zones: () => any;
     readonly load_stops: (a: number, b: number) => [number, number, number];
     readonly load_times: (a: number, b: number) => [number, number, number];
+    readonly search_stops: (a: number, b: number, c: number, d: number) => any;
     readonly stop_stats: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => [number, number, number];
-    readonly __wbindgen_externrefs: WebAssembly.Table;
     readonly __wbindgen_malloc: (a: number, b: number) => number;
     readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
+    readonly __wbindgen_externrefs: WebAssembly.Table;
     readonly __externref_table_dealloc: (a: number) => void;
     readonly __wbindgen_start: () => void;
 }

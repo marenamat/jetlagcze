@@ -73,6 +73,21 @@ export function load_times(cbor_bytes) {
 }
 
 /**
+ * Search stops by name (case-insensitive substring match).
+ * Returns up to 20 results sorted by distance from (center_lat, center_lon).
+ * @param {string} query
+ * @param {number} center_lat
+ * @param {number} center_lon
+ * @returns {any}
+ */
+export function search_stops(query, center_lat, center_lon) {
+    const ptr0 = passStringToWasm0(query, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.search_stops(ptr0, len0, center_lat, center_lon);
+    return ret;
+}
+
+/**
  * Compute frequency statistics for a single stop over selected dates.
  *
  * - `stop_id`: the stop to analyse
@@ -107,6 +122,13 @@ export function stop_stats(stop_id, dates_json, start_min, end_min, interval_min
 function __wbg_get_imports() {
     const import0 = {
         __proto__: null,
+        __wbg_String_8564e559799eccda: function(arg0, arg1) {
+            const ret = String(arg1);
+            const ptr1 = passStringToWasm0(ret, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+            const len1 = WASM_VECTOR_LEN;
+            getDataViewMemory0().setInt32(arg0 + 4 * 1, len1, true);
+            getDataViewMemory0().setInt32(arg0 + 4 * 0, ptr1, true);
+        },
         __wbg___wbindgen_throw_5549492daedad139: function(arg0, arg1) {
             throw new Error(getStringFromWasm0(arg0, arg1));
         },
@@ -148,6 +170,14 @@ function __wbg_get_imports() {
         __proto__: null,
         "./jetlagcze_frontend_bg.js": import0,
     };
+}
+
+let cachedDataViewMemory0 = null;
+function getDataViewMemory0() {
+    if (cachedDataViewMemory0 === null || cachedDataViewMemory0.buffer.detached === true || (cachedDataViewMemory0.buffer.detached === undefined && cachedDataViewMemory0.buffer !== wasm.memory.buffer)) {
+        cachedDataViewMemory0 = new DataView(wasm.memory.buffer);
+    }
+    return cachedDataViewMemory0;
 }
 
 function getStringFromWasm0(ptr, len) {
@@ -246,6 +276,7 @@ let wasmModule, wasm;
 function __wbg_finalize_init(instance, module) {
     wasm = instance.exports;
     wasmModule = module;
+    cachedDataViewMemory0 = null;
     cachedUint8ArrayMemory0 = null;
     wasm.__wbindgen_start();
     return wasm;
