@@ -188,11 +188,11 @@ const ICON_SEARCH = makeCircleIcon('#00aaff', 14);
 
 // ── Manual override ───────────────────────────────────────────────────────────
 
-window.setStopOverride = function (id, state) {
+window.setStopOverride = function (name, state) {
   if (state === 'default') {
-    delete manualOverrides[id];
+    delete manualOverrides[name];
   } else {
-    manualOverrides[id] = state;
+    manualOverrides[name] = state;
   }
   map.closePopup();
   applyFilter();
@@ -217,12 +217,12 @@ function freqParams() {
 function buildPopup(stop, dates) {
   const { interval, startH, endH } = freqParams();
   const zoneTag = stop.zone ? ' [' + stop.zone + ']' : '';
-  const cur = manualOverrides[stop.id] || 'default';
-  const sid = JSON.stringify(stop.id);
+  const cur = manualOverrides[stop.name] || 'default';
+  const sname = JSON.stringify(stop.name);
 
-  const btnShow  = `<button class="ovr-btn${cur === 'show' ? ' active' : ''}" onclick="window.setStopOverride(${sid},'show')">Always show</button>`;
-  const btnHide  = `<button class="ovr-btn${cur === 'hide' ? ' active' : ''}" onclick="window.setStopOverride(${sid},'hide')">Always hide</button>`;
-  const btnReset = cur !== 'default' ? ` <button class="ovr-btn" onclick="window.setStopOverride(${sid},'default')">Reset</button>` : '';
+  const btnShow  = `<button class="ovr-btn${cur === 'show' ? ' active' : ''}" onclick="window.setStopOverride(${sname},'show')">Always show</button>`;
+  const btnHide  = `<button class="ovr-btn${cur === 'hide' ? ' active' : ''}" onclick="window.setStopOverride(${sname},'hide')">Always hide</button>`;
+  const btnReset = cur !== 'default' ? ` <button class="ovr-btn" onclick="window.setStopOverride(${sname},'default')">Reset</button>` : '';
   const overrideRow = `<div class="stop-override">${btnShow} ${btnHide}${btnReset}</div>`;
 
   if (!timesReady) {
@@ -371,10 +371,9 @@ function renderStops(stops) {
 function renderGhostStops() {
   ghostLayer.clearLayers();
   const dates = currentDates();
-  for (const id of Object.keys(manualOverrides)) {
-    if (manualOverrides[id] !== 'hide') continue;
-    const s = allStopsById[id];
-    if (!s) continue;
+  // Collect all stops whose name is manually hidden, show each physical instance.
+  for (const s of Object.values(allStopsById)) {
+    if (manualOverrides[s.name] !== 'hide') continue;
     const marker = L.marker([s.lat, s.lon], { icon: ICON_GHOST });
     marker.bindPopup(() => buildPopup(s, dates));
     ghostLayer.addLayer(marker);
@@ -399,18 +398,19 @@ function applyFilter() {
       });
     }
 
-    // Apply manual overrides.
-    const hideIds = new Set(Object.keys(manualOverrides).filter(id => manualOverrides[id] === 'hide'));
-    const showIds = new Set(Object.keys(manualOverrides).filter(id => manualOverrides[id] === 'show'));
+    // Apply manual overrides (keyed by stop name).
+    const hideNames = new Set(Object.keys(manualOverrides).filter(n => manualOverrides[n] === 'hide'));
+    const showNames = new Set(Object.keys(manualOverrides).filter(n => manualOverrides[n] === 'show'));
 
-    // Remove always-hide stops from normal results.
-    stops = stops.filter(s => !hideIds.has(s.id));
+    // Remove all stops whose name is always-hidden.
+    stops = stops.filter(s => !hideNames.has(s.name));
 
-    // Add always-show stops not already in results.
-    const presentIds = new Set(stops.map(s => s.id));
-    for (const id of showIds) {
-      if (!presentIds.has(id) && allStopsById[id]) {
-        stops.push(allStopsById[id]);
+    // Add all physical stops whose name is always-shown but not yet present.
+    const presentNames = new Set(stops.map(s => s.name));
+    for (const s of Object.values(allStopsById)) {
+      if (showNames.has(s.name) && !presentNames.has(s.name)) {
+        stops.push(s);
+        presentNames.add(s.name);
       }
     }
 
@@ -455,9 +455,19 @@ stopSearch.addEventListener('input', function () {
   const center = map.getCenter();
   const results = search_stops(q, center.lat, center.lng);
   if (!results || results.length === 0) { searchDropdown.style.display = 'none'; return; }
-  searchDropdown.innerHTML = '';
+  // Deduplicate by name — results are sorted by distance, so first hit per name
+  // is the closest instance. Show only one entry per logical stop name.
+  const seenNames = new Set();
+  const deduped = [];
   for (let i = 0; i < results.length; i++) {
-    const s = results[i];
+    if (!seenNames.has(results[i].name)) {
+      seenNames.add(results[i].name);
+      deduped.push(results[i]);
+    }
+  }
+  searchDropdown.innerHTML = '';
+  for (let i = 0; i < deduped.length; i++) {
+    const s = deduped[i];
     const div = document.createElement('div');
     div.className = 'search-item';
     div.textContent = s.name + (s.zone ? ' [' + s.zone + ']' : '');
