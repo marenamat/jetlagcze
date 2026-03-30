@@ -303,3 +303,36 @@ pub fn stop_stats(
         None => Ok(JsValue::NULL),
     }
 }
+
+/// Search stops by name (case-insensitive substring match).
+/// Returns up to 20 results sorted by distance from (center_lat, center_lon).
+#[wasm_bindgen]
+pub fn search_stops(query: &str, center_lat: f64, center_lon: f64) -> JsValue {
+    let q = query.to_lowercase();
+    let lat_cos = center_lat.to_radians().cos();
+
+    let mut results: Vec<(f64, StopOut)> = STOPS.with(|stops| {
+        stops.borrow().iter()
+            .filter(|s| s.name.to_lowercase().contains(&q))
+            .map(|s| {
+                let dlat = s.lat - center_lat;
+                let dlon = (s.lon - center_lon) * lat_cos;
+                let dist2 = dlat * dlat + dlon * dlon;
+                (dist2, StopOut {
+                    id: s.id.clone(),
+                    name: s.name.clone(),
+                    lat: s.lat,
+                    lon: s.lon,
+                    zone: s.zone.clone(),
+                    pseudo: s.pseudo,
+                })
+            })
+            .collect()
+    });
+
+    results.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap_or(std::cmp::Ordering::Equal));
+    results.truncate(20);
+
+    let stops: Vec<StopOut> = results.into_iter().map(|(_, s)| s).collect();
+    serde_wasm_bindgen::to_value(&stops).unwrap_or(JsValue::NULL)
+}

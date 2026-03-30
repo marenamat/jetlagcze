@@ -1,4 +1,4 @@
-import init, { load_stops, filter_stops, get_date_bounds, get_zones, load_times, stop_stats } from './pkg/jetlagcze_frontend.js';
+import init, { load_stops, filter_stops, get_date_bounds, get_zones, load_times, stop_stats, search_stops } from './pkg/jetlagcze_frontend.js';
 
 const DEFAULT_ZONES = ['P', '0', 'B'];
 
@@ -17,6 +17,8 @@ const freqEnd         = document.getElementById('freq-end');
 const freqEndVal      = document.getElementById('freq-end-val');
 const freqCutoff      = document.getElementById('freq-cutoff');
 const freqCutoffNum   = document.getElementById('freq-cutoff-num');
+const stopSearch      = document.getElementById('stop-search');
+const searchDropdown  = document.getElementById('search-dropdown');
 
 const map          = window.map;
 const clusterGroup = window.clusterGroup;
@@ -24,6 +26,10 @@ const clusterGroup = window.clusterGroup;
 // ── State ─────────────────────────────────────────────────────────────────────
 
 let timesReady = false;
+// stopId → 'show' | 'hide' (omitted key = default/filter behaviour)
+const manualOverrides = {};
+// All stops by id (populated after load_stops, used for override lookups).
+let allStopsById = {};
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -159,6 +165,41 @@ const CoverageLayer = L.Layer.extend({
 
 const coverageLayer = new CoverageLayer();
 
+// ── Ghost / highlight layers ──────────────────────────────────────────────────
+
+// Ghost layer: always-hide stops, shown as gray dots, not counted in coverage.
+const ghostLayer = L.layerGroup();
+// Highlight layer: search-selected stop, shown as blue dot, not counted in coverage.
+const highlightLayer = L.layerGroup();
+
+function makeCircleIcon(color, size) {
+  const s = size || 10;
+  return L.divIcon({
+    className: '',
+    html: '<div style="width:' + s + 'px;height:' + s + 'px;border-radius:50%;background:' + color + ';border:1.5px solid rgba(0,0,0,0.4);box-sizing:border-box;"></div>',
+    iconSize: [s, s],
+    iconAnchor: [s / 2, s / 2],
+    popupAnchor: [0, -s / 2 - 2],
+  });
+}
+
+const ICON_GHOST  = makeCircleIcon('#999');
+const ICON_SEARCH = makeCircleIcon('#00aaff', 14);
+
+// ── Manual override ───────────────────────────────────────────────────────────
+
+window.setStopOverride = function (id, state) {
+  if (state === 'default') {
+    delete manualOverrides[id];
+  } else {
+    manualOverrides[id] = state;
+  }
+  map.closePopup();
+  applyFilter();
+};
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
 function currentDates() {
   return dateRange(dateFrom.value, dateTo.value);
 }
@@ -176,9 +217,17 @@ function freqParams() {
 function buildPopup(stop, dates) {
   const { interval, startH, endH } = freqParams();
   const zoneTag = stop.zone ? ' [' + stop.zone + ']' : '';
+  const cur = manualOverrides[stop.id] || 'default';
+  const sid = JSON.stringify(stop.id);
+
+  const btnShow  = `<button class="ovr-btn${cur === 'show' ? ' active' : ''}" onclick="window.setStopOverride(${sid},'show')">Always show</button>`;
+  const btnHide  = `<button class="ovr-btn${cur === 'hide' ? ' active' : ''}" onclick="window.setStopOverride(${sid},'hide')">Always hide</button>`;
+  const btnReset = cur !== 'default' ? ` <button class="ovr-btn" onclick="window.setStopOverride(${sid},'default')">Reset</button>` : '';
+  const overrideRow = `<div class="stop-override">${btnShow} ${btnHide}${btnReset}</div>`;
 
   if (!timesReady) {
     return `<b>${stop.name}</b><br><small>${stop.id}${zoneTag}</small>
+            ${overrideRow}
             <p class="freq-loading">Loading frequency data…</p>`;
   }
 
@@ -192,10 +241,12 @@ function buildPopup(stop, dates) {
 
   if (!stats) {
     return `<b>${stop.name}</b><br><small>${stop.id}${zoneTag}</small>
+            ${overrideRow}
             <p class="freq-loading">No departure data for this stop.</p>`;
   }
 
   return `<b>${stop.name}</b><br><small>${stop.id}${zoneTag}</small>
+          ${overrideRow}
           <div class="freq-stats">
             Departures per ${interval} min window
             (${fmt(startH)}–${fmt(endH)},
@@ -246,7 +297,6 @@ function collapseGroup(name, mergedMarker) {
 
 function expandGroup(group, mergedMarker) {
   clusterGroup.removeLayer(mergedMarker);
-  const dates = currentDates();
   const indiv = group.members.map(function (s) {
     const m = L.marker([s.lat, s.lon]);
     m.bindPopup(function () {
@@ -318,6 +368,19 @@ function renderStops(stops) {
   coverageLayer.setStops(stops);
 }
 
+function renderGhostStops() {
+  ghostLayer.clearLayers();
+  const dates = currentDates();
+  for (const id of Object.keys(manualOverrides)) {
+    if (manualOverrides[id] !== 'hide') continue;
+    const s = allStopsById[id];
+    if (!s) continue;
+    const marker = L.marker([s.lat, s.lon], { icon: ICON_GHOST });
+    marker.bindPopup(() => buildPopup(s, dates));
+    ghostLayer.addLayer(marker);
+  }
+}
+
 function applyFilter() {
   const dates = currentDates();
   const zones = selectedZones();
@@ -336,7 +399,23 @@ function applyFilter() {
       });
     }
 
+    // Apply manual overrides.
+    const hideIds = new Set(Object.keys(manualOverrides).filter(id => manualOverrides[id] === 'hide'));
+    const showIds = new Set(Object.keys(manualOverrides).filter(id => manualOverrides[id] === 'show'));
+
+    // Remove always-hide stops from normal results.
+    stops = stops.filter(s => !hideIds.has(s.id));
+
+    // Add always-show stops not already in results.
+    const presentIds = new Set(stops.map(s => s.id));
+    for (const id of showIds) {
+      if (!presentIds.has(id) && allStopsById[id]) {
+        stops.push(allStopsById[id]);
+      }
+    }
+
     renderStops(stops);
+    renderGhostStops();
   } catch (e) {
     status.textContent = 'Filter error: ' + e;
   }
@@ -357,6 +436,45 @@ function buildZoneCheckboxes(zones) {
     zoneFilter.appendChild(lbl);
   }
 }
+
+// ── Search ────────────────────────────────────────────────────────────────────
+
+function showSearchResult(s) {
+  highlightLayer.clearLayers();
+  const dates = currentDates();
+  const marker = L.marker([s.lat, s.lon], { icon: ICON_SEARCH });
+  marker.bindPopup(buildPopup(s, dates));
+  highlightLayer.addLayer(marker);
+  map.setView([s.lat, s.lon], Math.max(map.getZoom(), 15));
+  marker.openPopup();
+}
+
+stopSearch.addEventListener('input', function () {
+  const q = stopSearch.value.trim();
+  if (q.length < 2) { searchDropdown.style.display = 'none'; return; }
+  const center = map.getCenter();
+  const results = search_stops(q, center.lat, center.lng);
+  if (!results || results.length === 0) { searchDropdown.style.display = 'none'; return; }
+  searchDropdown.innerHTML = '';
+  for (let i = 0; i < results.length; i++) {
+    const s = results[i];
+    const div = document.createElement('div');
+    div.className = 'search-item';
+    div.textContent = s.name + (s.zone ? ' [' + s.zone + ']' : '');
+    div.addEventListener('mousedown', function (e) {
+      e.preventDefault();
+      searchDropdown.style.display = 'none';
+      stopSearch.value = '';
+      showSearchResult(s);
+    });
+    searchDropdown.appendChild(div);
+  }
+  searchDropdown.style.display = 'block';
+});
+
+stopSearch.addEventListener('blur', function () {
+  setTimeout(function () { searchDropdown.style.display = 'none'; }, 150);
+});
 
 // ── Events ────────────────────────────────────────────────────────────────────
 
@@ -410,8 +528,10 @@ freqCutoffNum.addEventListener('input', () => {
   try {
     await init();
 
-    // Add coverage layer to map (default on).
+    // Add layers to map.
     coverageLayer.addTo(map);
+    ghostLayer.addTo(map);
+    highlightLayer.addTo(map);
 
     status.textContent = 'Fetching stop data\u2026';
     const res = await fetch('./pid_stops.cbor');
@@ -419,6 +539,13 @@ freqCutoffNum.addEventListener('input', () => {
     const buf = await res.arrayBuffer();
 
     const count = load_stops(new Uint8Array(buf));
+
+    // Build id→stop lookup for manual override / search use.
+    const allStops = filter_stops('[]', '[]', true);
+    for (let i = 0; i < allStops.length; i++) {
+      allStopsById[allStops[i].id] = allStops[i];
+    }
+
     const bounds = get_date_bounds();
     if (bounds) {
       dateFrom.min = bounds[0];
