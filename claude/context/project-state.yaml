@@ -1,44 +1,30 @@
-updated: 2026-03-30T10:30Z
+updated: 2026-03-30T14:30Z
 
 branches:
-  - name: mq-claude-pid-stops-hide-manually
-    task: t-pid-stops-hide-manually
-    status: ready-for-review
-    summary: >
-      Three-state per-stop override: always show / always hide / default (by filters).
-      Popup buttons let user pin or hide any stop. Pinned stops bypass all filters.
-      Hidden stops rendered as gray ghost markers (not in coverage calc).
-      Stop name search: dropdown sorted by distance from map center, up to 20 results.
-      Clicking a result shows cyan marker + popup without affecting coverage.
-      lib.rs: search_stops() added.
-
   - name: mq-claude-pid-stops-gui-readme
     task: t-pid-stops-gui
     status: ready-for-review
     summary: Adds map link to README.md.
 
-  - name: mq-claude-pid-stops-gui-frequency
-    task: t-pid-stops-gui-frequency
-    status: ready-for-review
-    summary: >
-      src/process_gtfs_times.py: generates pid_stops_times.cbor
-      (departure times per stop per date, minutes from midnight).
-      Rust: load_times() + stop_stats() compute frequency stats
-      (min/max/avg/median/p5/p95/std_dev) over a sliding interval.
-      UI: sliders for interval (5-120 min) and time window (hour
-      granularity, default 9-21). Popup shows stats table.
-      Zone filter integrated (zones + frequency in one UI).
-
   - name: mq-claude-optimize-cbor
     task: t-optimize-cbor
     status: ready-for-review
     summary: >
-      process_gtfs.py: integer map keys (0-6), fixed-point lat/lon ×1e6,
+      process_gtfs.py: integer map keys (0-6), fixed-point lat/lon x1e6,
       CBOR tag 100 dates (days since epoch), zone enum (P=0,0=1,B=2,1-13=3-15,-=16).
       lib.rs: complete rewrite using ciborium::value::Value manual parser.
       doc/pid_stops.cddl: CDDL (RFC 8610) machine-readable schema.
       doc/pid_stops.md: human-readable format documentation.
       Note: frequency branch (load_times) still uses text-key serde format.
+
+  - name: mq-claude-pid-stops-fix-override-name
+    task: t-pid-stops-hide-manually
+    status: ready-for-review
+    summary: >
+      bootstrap.js: fix manual overrides, ghost layer, freq cutoff, and search
+      deduplication to key by stop name (not stop ID), so all physical instances
+      of a merged stop are handled together.
+      freqCutoffNum input now allows values above slider range (5).
 
 merged_branches:
   - mq-claude-pid-data
@@ -49,6 +35,13 @@ merged_branches:
   - mq-claude-pid-stops-zones
   - mq-claude-zone-sort
   - mq-claude-default-today
+  - mq-claude-pid-stops-mark-too-far
+  - mq-claude-pid-stops-gui-frequency
+  - mq-claude-pid-stops-gui-merge-same-name
+  - mq-claude-freq-cutoff-adjust
+  - mq-claude-pid-stops-hide-manually
+  - mq-claude-pid-stops-refactor-menu
+  - mq-claude-freq-fix-interval
 
 tasks:
   - t-reauthor: DONE (all unmerged commits already authored as vibecoding-claude@jmq.cz)
@@ -63,10 +56,11 @@ design_decisions:
   - pkg/.gitignore removed before gh-pages deploy so wasm-pack output is committed
   - Do not push to github; branches appear there after code review by user
   - T-prefix stop IDs are routing nodes (pseudo-stops), hidden by default in UI
-  - Zone filter: comma-separated zone_id split into individual zones; empty zone = "-"
+  - Zone filter: comma-separated zone_id split into individual zones; empty zone = '-'
   - deploy.yml triggers on frontend/ changes; pid-data.yml triggers on script changes
   - First fix bugs, then think about features
   - CBOR format: integer keys (saves ~50 bytes/stop), fixed-point coords, tag-100 dates
   - load_times() still uses serde text-key format (not yet updated to integer keys)
+  - Manual overrides and freq cutoff keyed by stop name (not ID) to handle merged stops
 
 open_questions: []
