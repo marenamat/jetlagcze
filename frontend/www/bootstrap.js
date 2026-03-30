@@ -212,20 +212,109 @@ function buildPopup(stop, dates) {
           </div>`;
 }
 
+// ── Stop grouping ─────────────────────────────────────────────────────────────
+//
+// Stops sharing the same name are merged into a single marker at their average
+// position. A popup button lets the user expand/collapse individual instances.
+
+/** Group stops by name; compute average lat/lon for multi-stop groups. */
+function groupStops(stops) {
+  const byName = new Map();
+  for (const s of stops) {
+    if (!byName.has(s.name)) byName.set(s.name, []);
+    byName.get(s.name).push(s);
+  }
+  const groups = [];
+  for (const [name, members] of byName) {
+    let lat = 0, lon = 0;
+    for (const s of members) { lat += s.lat; lon += s.lon; }
+    groups.push({ name, members, lat: lat / members.length, lon: lon / members.length });
+  }
+  return groups;
+}
+
+// name → array of individual markers currently shown for that group
+const expandedGroups = new Map();
+
+function collapseGroup(name, mergedMarker) {
+  const indiv = expandedGroups.get(name);
+  if (!indiv) return;
+  for (const m of indiv) clusterGroup.removeLayer(m);
+  expandedGroups.delete(name);
+  clusterGroup.addLayer(mergedMarker);
+}
+
+function expandGroup(group, mergedMarker) {
+  clusterGroup.removeLayer(mergedMarker);
+  const dates = currentDates();
+  const indiv = group.members.map(function (s) {
+    const m = L.marker([s.lat, s.lon]);
+    m.bindPopup(function () {
+      return buildPopup(s, currentDates()) +
+        '<br><button class="collapse-btn">\u21A9 Collapse to single marker</button>';
+    });
+    m.on('popupopen', function () {
+      const btn = m.getPopup().getElement().querySelector('.collapse-btn');
+      if (btn) btn.onclick = function () { collapseGroup(group.name, mergedMarker); };
+    });
+    clusterGroup.addLayer(m);
+    return m;
+  });
+  expandedGroups.set(group.name, indiv);
+}
+
+function makeMergedMarker(group) {
+  const zones = [];
+  const seen = new Set();
+  for (const s of group.members) {
+    if (s.zone) {
+      for (const z of s.zone.split(',')) {
+        const zt = z.trim();
+        if (zt && zt !== '-' && !seen.has(zt)) { seen.add(zt); zones.push(zt); }
+      }
+    }
+  }
+  const zoneTag = zones.length > 0 ? ' [' + zones.join(',') + ']' : '';
+  const m = L.marker([group.lat, group.lon]);
+  m.bindPopup(
+    '<b>' + group.name + '</b>' + zoneTag + '<br>' +
+    '<small>' + group.members.length + ' stops</small><br>' +
+    '<button class="expand-btn">Show all ' + group.members.length + ' instances</button>'
+  );
+  m.on('popupopen', function () {
+    const btn = m.getPopup().getElement().querySelector('.expand-btn');
+    if (btn) btn.onclick = function () {
+      m.closePopup();
+      expandGroup(group, m);
+    };
+  });
+  return m;
+}
+
 // ── Rendering ─────────────────────────────────────────────────────────────────
 
 let currentStops = [];
 
 function renderStops(stops) {
   currentStops = stops;
+  // Clear any expanded group state and rebuild all markers from scratch.
+  expandedGroups.clear();
   clusterGroup.clearLayers();
-  const dates = currentDates();
-  for (const s of stops) {
-    const marker = L.marker([s.lat, s.lon]);
-    marker.bindPopup(() => buildPopup(s, dates));
-    clusterGroup.addLayer(marker);
+
+  const groups = groupStops(stops);
+  for (const group of groups) {
+    if (group.members.length === 1) {
+      const s = group.members[0];
+      const marker = L.marker([s.lat, s.lon]);
+      marker.bindPopup(() => buildPopup(s, currentDates()));
+      clusterGroup.addLayer(marker);
+    } else {
+      clusterGroup.addLayer(makeMergedMarker(group));
+    }
   }
-  status.textContent = stops.length + ' stop' + (stops.length !== 1 ? 's' : '');
+
+  status.textContent = stops.length + ' stop' + (stops.length !== 1 ? 's' : '') +
+    ' (' + groups.length + ' location' + (groups.length !== 1 ? 's' : '') + ')';
   coverageLayer.setStops(stops);
 }
 
