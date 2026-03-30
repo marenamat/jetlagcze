@@ -15,6 +15,8 @@ const freqStart       = document.getElementById('freq-start');
 const freqStartVal    = document.getElementById('freq-start-val');
 const freqEnd         = document.getElementById('freq-end');
 const freqEndVal      = document.getElementById('freq-end-val');
+const freqCutoff      = document.getElementById('freq-cutoff');
+const freqCutoffVal   = document.getElementById('freq-cutoff-val');
 
 const map          = window.map;
 const clusterGroup = window.clusterGroup;
@@ -231,7 +233,20 @@ function applyFilter() {
   const dates = currentDates();
   const zones = selectedZones();
   try {
-    const stops = filter_stops(JSON.stringify(dates), JSON.stringify(zones), showPseudo.checked);
+    let stops = filter_stops(JSON.stringify(dates), JSON.stringify(zones), showPseudo.checked);
+
+    // Apply frequency cutoff: hide stops where avg departures < cutoff.
+    // Only active when times data is loaded and cutoff > 0.
+    const cutoff = parseFloat(freqCutoff.value);
+    if (timesReady && cutoff > 0) {
+      const { startH, endH, interval } = freqParams();
+      const datesJson = JSON.stringify(dates);
+      stops = stops.filter(function (s) {
+        const stats = stop_stats(s.id, datesJson, startH * 60, endH * 60, interval);
+        return stats && stats.avg >= cutoff;
+      });
+    }
+
     renderStops(stops);
   } catch (e) {
     status.textContent = 'Filter error: ' + e;
@@ -278,14 +293,21 @@ coverageToggle.addEventListener('change', function () {
 
 freqInterval.addEventListener('input', () => {
   freqIntVal.textContent = freqInterval.value + ' min';
+  if (timesReady && parseFloat(freqCutoff.value) > 0) applyFilter();
 });
 freqStart.addEventListener('input', () => {
   freqStartVal.textContent = fmt(freqStart.value);
   if (+freqStart.value > +freqEnd.value) freqEnd.value = freqStart.value;
+  if (timesReady && parseFloat(freqCutoff.value) > 0) applyFilter();
 });
 freqEnd.addEventListener('input', () => {
   freqEndVal.textContent = fmt(freqEnd.value);
   if (+freqEnd.value < +freqStart.value) freqStart.value = freqEnd.value;
+  if (timesReady && parseFloat(freqCutoff.value) > 0) applyFilter();
+});
+freqCutoff.addEventListener('input', () => {
+  freqCutoffVal.textContent = freqCutoff.value;
+  if (timesReady) applyFilter();
 });
 
 // ── Bootstrap ─────────────────────────────────────────────────────────────────
@@ -335,6 +357,7 @@ freqEnd.addEventListener('input', () => {
       .then(buf => {
         load_times(new Uint8Array(buf));
         timesReady = true;
+        applyFilter(); // re-filter now that frequency cutoff can be applied
       })
       .catch(e => console.warn('Could not load times data:', e));
 
