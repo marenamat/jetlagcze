@@ -50,7 +50,7 @@ foreach my $l (@$lines) {
   push @{$slines{$id}}, [ $short, $long ];
 }
 
-open F, ">:utf8", "coords-full.txt" or die $!;
+open F, ">:utf8", "coords-full.md" or die $!;
 open S, ">:utf8", "coords-short.md" or die $!;
 
 foreach my $s (sort { $a cmp $b } keys %stops) {
@@ -68,12 +68,13 @@ foreach my $s (sort { $a cmp $b } keys %stops) {
   $lat /= @{$stops{$s}};
   $lon /= @{$stops{$s}};
 
-  say S "$s: [$lat, $lon](https://mapy.com/en/turisticka?q=$lat%2C$lon&source=coor&z=17)";
+  say S "- $s: [$lat, $lon](https://mapy.com/en/turisticka?q=$lat%2C$lon&source=coor&z=17)";
   say F "$s: $lat, $lon";
   foreach my $i (@{$stops{$s}}) {
     my $loclines = join ", ", sort { $a <=> $b || $a cmp $b } map { $_->[0] } @{$slines{$i->{id}}};
-    say F "- $i->{id} ($loclines): $i->{lat}, $i->{lat}";
+    say F "- $i->{id} ($loclines): [$i->{lat}, $i->{lat}](https://mapy.com/en/turisticka?q=$i->{lat}%2C$i->{lon}&source=coor&z=17)";
   }
+  say F "";
 }
 
 close F;
