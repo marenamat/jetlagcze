@@ -7,9 +7,11 @@ use DBI;
 use utf8;
 use locale;
 
+my ($sqlite, $stem) = @ARGV;
+
 # export LC_COLLATE=cs_CZ.utf-8 LC_CTYPE=cs_CZ.utf-8 LC_NUMERIC=en_US.UTF-8
 
-my $dbh = DBI->connect("dbi:SQLite:dbname=pid_gtfs.sqlite", "", "",
+my $dbh = DBI->connect("dbi:SQLite:dbname=$sqlite", "", "",
   { AutoCommit => 0, RaiseError => 1, sqlite_unicode => 1 }) or die $!;
 
 my $data = $dbh->selectall_arrayref('
@@ -50,9 +52,9 @@ foreach my $l (@$lines) {
   push @{$slines{$id}}, [ $short, $long ];
 }
 
-open F, ">:utf8", "coords-full.md" or die $!;
-open S, ">:utf8", "coords-short.md" or die $!;
-open G, ">:utf8", "stops.gpx" or die $!;
+open F, ">:utf8", "$stem-coords-full.md" or die $!;
+open S, ">:utf8", "$stem-coords-short.md" or die $!;
+open G, ">:utf8", "$stem.gpx" or die $!;
 
 print G '<?xml version="1.0" encoding="utf-8"?><gpx xmlns="http://www.topografix.com/GPX/1/1" version="1.1" creator="https://mapy.com/">';
 
