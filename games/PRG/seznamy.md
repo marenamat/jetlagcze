@@ -115,6 +115,59 @@ Použijte [seznam zastávek](../../gtfs/prg-coords-short.md):
 
 ## Ostrovy a mosty
 
+Cokoliv je "vlevo", je levý břeh, cokoliv je "vpravo", je pravý břeh.
+Níže je vyjmenovaná oblast, která není ani vlevo, ani vpravo.
+
+- hladina Vltavy včetně nástupních prostorů všech přívozů, botelů a jiných lodí
+- most Závodu míru mezi silničními křižovatkami na obou stranách
+- celá cyklostezka pod Radotínským mostem od nájezdu po nájezd
+- umělý ostrov u modřanského jezu včetně mostku na něj a včetně plavební komory u pravého břehu
+- Branický most od schodů po schody
+- Branická nudle
+- Barrandovský most
+- Dvorecký most od tramvajové křižovatky po tramvajovou křižovatku
+- Císařská louka včetně mostu
+- Veslařský ostrov včetně mostu
+- Podolský přístav od světelné křižovatky na nábřeží
+- Vyšehradský most
+- Palackého most
+- Jiráskův most
+- Petržilkovský ostrov
+- Dětský ostrov včetně mostku
+- Žofín včetně mostku a Mánesa
+- Most Legií od křižovatky po křižovatku
+- Střelecký ostrov
+- Kampa od ulice Říční / Malostranského nábřeží, až po Čertovku, včetně všech mostků
+- Karlův most včetně staroměstské věže
+- Novotného lávka od průchodu domem
+- Křížovnický ostrov, prostor kolem sochy Karla IV., muzeum Karlova mostu
+- Mánesův most od schodů pro chodce po schody
+- Čechův most od křižovatky ke křižovatce
+- Štefánikův most od křižovatky ke křižovatce
+- Hlávkův most včetně ramp pro pěší a cyklisty
+- Štvanice včetně plavebních komor
+- Negrelliho viadukt (ale tam nelezte, přejede vás vlak)
+- Štvanická lávka
+- Libeňský most
+- Libeňský ostrov a Maninský ostrov a všechno severně od Libeňského mostu až po Voctářovu ulici, Rokytku a ulici U Českých loděnic
+- Holešovická přístavní kosa, ulice Sanderova
+- Holešovický železniční most (tam taky nelezte)
+- Most Barikádníků včetně ramp pro pěší a cyklisty (ale podchod v Troji už ne)
+- Trojský most od křižovatky po křižovatku
+- Trojská plavební komora a slalomový kanál
+- Císařský ostrov včetně mostů a plavební komory Podbaba
+- Trojská lávka včetně ramp
+- Ostrůvek u ZOO
+
+### Pro jistotu …
+
+- PP Krňák je levý břeh.
+- Hladina Berounky až po soutok je levý břeh.
+- Modřanské laguny jsou pravý břeh.
+- Malostranská mostecká věž je levý břeh.
+- Rohanský ostrov je pravý břeh, až po Libeňský most
+- Ulice Za Císařským mlýnem je levý břeh (ale možná by stála za přesun do ostrovů, protože bývalý meandr Vltavy)
+
 ## Senátní obvody
 
 [wiki](https://cs.wikipedia.org/wiki/Seznam_sen%C3%A1tn%C3%ADch_obvod%C5%AF_v_%C4%8Cesku)
