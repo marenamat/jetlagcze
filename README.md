@@ -6,6 +6,10 @@ JetLag in Czechia.
 Toto je pomocný repozitář pro nástroje potřebné k příjemnému hraní
 JetLag her v Česku.
 
+## Místní přizpůsobení a upravená pravidla
+
+[Praha](games/PRG/pravidla.md)
+
 ## Map
 
 [PID stops map](https://marenamat.github.io/jetlagcze/) — OpenStreetMap overlay of
