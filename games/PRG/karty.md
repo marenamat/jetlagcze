@@ -1,4 +1,14 @@
-## Karty
+# JetLag Hide&Seek, pravidla pro Prahu: Karty
+
+→ [Pravidla](pravidla.md)
+
+*Tento text vzniknul na základě původní hry
+[JetLag Hide&Seek](https://store.nebula.tv/collections/jetlag/products/hideandseek)
+a zkušeností z testovací hry v pátek 3. dubna 2026.*
+
+*Změnu pravidel navrhněte jako [github issue](https://github.com/marenamat/jetlagcze).*
+
+# Karty
 
 V Praze hrajeme prostřední (oranžovou) verzi.
 
@@ -38,7 +48,7 @@ Jiné karty:
 
 → 29x powerup
 
-### Curses
+## Curses
 
 *total 44 cards*
 

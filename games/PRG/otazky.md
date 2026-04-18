@@ -16,24 +16,24 @@ a zkušeností z testovací hry v pátek 3. dubna 2026.*
 balíčku a jednu z nich si ponechá. Otázku zodpovídá schovaná strana podle toho,
 na kterém místě fyzicky je ve chvíli, kdy na otázku odpovídá.*
 
-- **Letiště**: Máme totéž nejbližší [letiště na území Prahy](seznamy.md#letiste)?
+- **Letiště**: Máme totéž nejbližší [letiště na území Prahy](seznamy.md#letiště)?
 - **Přímý spoj**: Jsem na zastávce X, odjede v nejbližší hodině ze zastávky
   tohoto jména přímý spoj do tvojí referenční zastávky?
 - **Břeh Vltavy**: Jsme ve stejné oblasti oddělené břehy Vltavy, tj.:
     - levý břeh
     - pravý břeh
     - [cokoliv mezi břehy](seznamy.md#ostrovy-a-mosty)
-- **Senátní obvod**: Jsme v témže [senátním obvodu](seznamy.md#senat)?
-- **Městská část**: Jsme v téže [městské části](seznamy.md#mestske-casti)?
-- **Katastrální území**: Jsme v témže [katastrálním území](seznamy.md#katastralni-uzemi)?
+- **Senátní obvod**: Jsme v témže [senátním obvodu](seznamy.md#senátní-obvody)?
+- **Městská část**: Jsme v téže [městské části](seznamy.md#městské-části)?
+- **Katastrální území**: Jsme v témže [katastrálním území](seznamy.md#katastrální-území)?
 - **Vrchol**: Máme tentýž nejbližší [významný vrchol](seznamy.md#vrcholy)?
 - **Muzeum**: Máme totéž nejbližší [muzeum](seznamy.md#muzeum)?
 - **Kino**: Máme totéž nejbližší [kino](seznamy.md#kino)?
 - **Divadlo**: Máme totéž nejbližší [divadlo](seznamy.md#divadlo)?
-- **Klášter**: Máme tentýž nejbližší [klášter](seznamy.md#klaster)?
+- **Klášter**: Máme tentýž nejbližší [klášter](seznamy.md#klášter)?
 - **Nemocnice**: Máme tutéž nejbližší [nemocnici](seznamy.md#nemocnice)?
-- **Pobočku městské knihovny**: Máme tutéž nejbližší [pobočku městské knihovny](seznamy.md#mestska-knihovna-praha)?
-- **Vozovnu tramvají**: Máme tutéž nejbližší [vozovnu tramvají](seznamy.md#vozovna-tramvají)?
+- **Pobočku městské knihovny**: Máme tutéž nejbližší [pobočku městské knihovny](seznamy.md#městská-knihovna-praha)?
+- **Vozovnu tramvají**: Máme tutéž nejbližší [vozovnu tramvají](seznamy.md#vozovny-tramvají)?
 
 ## Měření
 
@@ -46,8 +46,8 @@ tvoje nejbližší *letiště* (může být jiné). Jsi blíž k *letišti* než
 
 Kategorie:
 
-- [**Letiště**](seznamy.md#letiste)
-- [**Stanice těžké kolejové dopravy**](seznamy.md#stanice-tezke-kolejove-dopravy)
+- [**Letiště**](seznamy.md#letiště)
+- [**Stanice těžké kolejové dopravy**](seznamy.md#stanice-těžké-kolejové-dopravy)
 - [**Břeh Vltavy**](seznamy.md#ostrovy-a-mosty) – počítá se levý i pravý břeh zvlášť
 - [**Hranice městské části**](seznamy.md#mestske-casti)
 - [**Vodní plocha**] – popsaná na mapy.cz, ne vodní tok
@@ -89,7 +89,8 @@ Na všech fotkách je dovoleno cenzurovat všechny reklamy, čísla, texty a log
   Vršek objektu musí být v horní třetině fotky a objekt musí mít na fotce levý
   i pravý okraj.
 - **Nejvyšší budova viditelná z referenční zastávky**. Schovaná strana se postaví
-  postupně ke všem zastávkovým sloupkům referenční zastávky, výstupům z metra a
+  postupně ke [všem zastávkovým sloupkům](../../gtfs/prg-coords-full.md)
+  referenční zastávky, výstupům z metra a
   východům z nádraží. Vyfotí tu budovu, kvůli které musí nejvíc zaklonit hlavu.
   Počítají se všechny objekty, které mají regulérní dveře, byť zamčené nebo zazděné.
   Vršek budovy musí být v horní třetině fotky a fotka musí mít na fotce levý

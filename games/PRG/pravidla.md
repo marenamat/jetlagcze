@@ -13,8 +13,8 @@ odpověď v originálních pravidlech.
 ## Herní plocha
 
 Hraje se na území hlavního města Prahy dle hranic obce. Centrem schovacích zón
-je [seznam vyjmenovaných zastávek](zastavky.md). Okruh schovávání je 500 metrů
-od GPS souřadnic uvedených v seznamu.
+je [seznam vyjmenovaných zastávek](../../gtfs/prg-coords-short.md).
+Okruh schovávání je 500 metrů od GPS souřadnic uvedených v seznamu.
 
 Pohybujeme se pěšky a spoji PID, které jsou v zónách P, 0 a B na území hlavního
 města Prahy, konkrétně vším, v čem platí
@@ -63,7 +63,8 @@ nastal, ne však později než 10 minut po začátku schovacího času.
 Zpoždění MHD je součástí rizika volby trasy.
 
 Ve chvíli, kdy schovací čas skončil, si tým musí zvolit nějakou
-[zastávku ze seznamu](zastavky.md), ke které to nemá dál než 500 metrů vzdušnou
+[zastávku ze seznamu](../../gtfs/prg-coords-short.md),
+ke které to nemá dál než 500 metrů vzdušnou
 čarou, a to bude následně referenční zastávka pro schovací oblast tohoto kola.
 
 Na onu zastávku nemusí v době hry vůbec jet žádné spoje PID, jedná se primárně
