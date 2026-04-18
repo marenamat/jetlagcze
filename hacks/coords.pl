@@ -52,6 +52,9 @@ foreach my $l (@$lines) {
 
 open F, ">:utf8", "coords-full.md" or die $!;
 open S, ">:utf8", "coords-short.md" or die $!;
+open G, ">:utf8", "stops.gpx" or die $!;
+
+print G '<?xml version="1.0" encoding="utf-8"?><gpx xmlns="http://www.topografix.com/GPX/1/1" version="1.1" creator="https://mapy.com/">';
 
 foreach my $s (sort { $a cmp $b } keys %stops) {
   my ($lat, $lon);
@@ -69,6 +72,7 @@ foreach my $s (sort { $a cmp $b } keys %stops) {
   $lon /= @{$stops{$s}};
 
   say S "- $s: [$lat, $lon](https://mapy.com/en/turisticka?q=$lat%2C$lon&source=coor&z=17)";
+  print G "<wpt lat='$lat' lon='$lon'><name>$s</name></wpt>";
   say F "$s: $lat, $lon";
   foreach my $i (@{$stops{$s}}) {
     my $loclines = join ", ", sort { $a <=> $b || $a cmp $b } map { $_->[0] } @{$slines{$i->{id}}};
@@ -79,3 +83,6 @@ foreach my $s (sort { $a cmp $b } keys %stops) {
 
 close F;
 close S;
+
+print G "</gpx>";
+close G;
