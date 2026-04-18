@@ -9,6 +9,8 @@ use locale;
 
 my ($sqlite, $stem) = @ARGV;
 
+require "./$stem.pm" if -f "./$stem.pm";
+
 # export LC_COLLATE=cs_CZ.utf-8 LC_CTYPE=cs_CZ.utf-8 LC_NUMERIC=en_US.UTF-8
 
 my $dbh = DBI->connect("dbi:SQLite:dbname=$sqlite", "", "",
@@ -28,22 +30,8 @@ my $lines = $dbh->selectall_arrayref('
   JOIN stop_times AS s ON (t.trip_id = s.trip_id)
   ');
 
-my %stops;
-
-foreach my $d (@$data) {
-  my ($id, $name, $lat, $lon, $zone, $loctype, $zonetype) = @$d;
-  next if $name =~ /,/; # drop non-prague zastávky
-  my $in_zone = 0;
-  map { /^[P0B]$/ and $in_zone++ } split /,/, $zone;
-  push @{$stops{$name}}, {
-    id => $id,
-    lat => $lat,
-    lon => $lon,
-    zone => $zone,
-    loctype => $loctype,
-    zonetype => $zonetype,
-  } if $in_zone;
-}
+my %stops = %{coords_plugin::filter($data)};
+my $lim = $coords_plugin::limits;
 
 my %slines;
 
@@ -58,13 +46,13 @@ open G, ">:utf8", "$stem.gpx" or die $!;
 
 print G '<?xml version="1.0" encoding="utf-8"?><gpx xmlns="http://www.topografix.com/GPX/1/1" version="1.1" creator="https://mapy.com/">';
 
-foreach my $s (sort { $a cmp $b } keys %stops) {
+foreach my $s (sort { $stops{$a}[0]{name} cmp $stops{$b}[0]{name} } keys %stops) {
   my ($lat, $lon);
   foreach my $i (@{$stops{$s}}) {
-    dd $stops{$s} and die "lat $i->{lat}" if $i->{lat} > 50.2;
-    dd $stops{$s} and die "lat $i->{lat}" if $i->{lat} < 49.5;
-    dd $stops{$s} and die "lon $i->{lon}" if $i->{lon} < 14;
-    dd $stops{$s} and die "lon $i->{lon}" if $i->{lon} > 14.7;
+    dd $stops{$s} and die "lat $i->{lat}" if exists $lim->{maxlat} and $i->{lat} > $lim->{maxlat};
+    dd $stops{$s} and die "lat $i->{lat}" if exists $lim->{minlat} and $i->{lat} < $lim->{minlat};
+    dd $stops{$s} and die "lon $i->{lon}" if exists $lim->{minlon} and $i->{lon} < $lim->{minlon};
+    dd $stops{$s} and die "lon $i->{lon}" if exists $lim->{maxlon} and $i->{lon} > $lim->{maxlon};
 
     $lat += $i->{lat};
     $lon += $i->{lon};
@@ -73,12 +61,15 @@ foreach my $s (sort { $a cmp $b } keys %stops) {
   $lat /= @{$stops{$s}};
   $lon /= @{$stops{$s}};
 
-  say S "- $s: [$lat, $lon](https://mapy.com/en/turisticka?q=$lat%2C$lon&source=coor&z=17)";
-  print G "<wpt lat='$lat' lon='$lon'><name>$s</name></wpt>";
-  say F "$s: $lat, $lon";
+  my %n = map +( $_->{name} => 1 ), @{$stops{$s}};
+  my $names = join ", ", sort { $a cmp $b } keys %n;
+
+  say S "- $names: [$lat, $lon](https://mapy.com/en/turisticka?q=$lat%2C$lon&source=coor&z=17)";
+  print G "<wpt lat='$lat' lon='$lon'><name>$names</name></wpt>";
+  say F "$names: $lat, $lon";
   foreach my $i (@{$stops{$s}}) {
     my $loclines = join ", ", sort { $a <=> $b || $a cmp $b } map { $_->[0] } @{$slines{$i->{id}}};
-    say F "- $i->{id} ($loclines): [$i->{lat}, $i->{lat}](https://mapy.com/en/turisticka?q=$i->{lat}%2C$i->{lon}&source=coor&z=17)";
+    say F "- $i->{id} $i->{name} ($loclines): [$i->{lat}, $i->{lat}](https://mapy.com/en/turisticka?q=$i->{lat}%2C$i->{lon}&source=coor&z=17)";
   }
   say F "";
 }
