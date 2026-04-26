@@ -12,19 +12,19 @@ a zkušeností z testovací hry v pátek 3. dubna 2026.*
 
 ## Letiště
 
-- Ruzyně / PRG: 50.1083953N, 14.2621233E
-- Kbelíky: 50.1213861N, 14.5436083E
-- Letňany: 50.1313861N, 14.5255528E
-- Točná: 49.9854383N, 14.4264211E
+- Ruzyně / PRG: [50.1083953N, 14.2621233E](https://mapy.com/en/turisticka?q=50.1083953%2C50.1083953&source=coor&z=17)
+- Kbelíky: [50.1213861N, 14.5436083E](https://mapy.com/en/turisticka?q=50.1213861%2C50.1213861&source=coor&z=17)
+- Letňany: [50.1313861N, 14.5255528E](https://mapy.com/en/turisticka?q=50.1313861%2C50.1313861&source=coor&z=17)
+- Točná: [49.9854383N, 14.4264211E](https://mapy.com/en/turisticka?q=49.9854383%2C49.9854383&source=coor&z=17)
 
 ## Vrcholy
 
-- Ládví: 50.1360989N, 14.4646031E
-- Tábor: 50.0896564N, 14.5165433E
-- Džbán: 50.0965336N, 14.3216072E
-- Vidoule: 50.0598169N, 14.3500167E
-- Petřín (rozhledna): 50.0835400N, 14.3950800E
-- Děvín: 50.0452308N, 14.3915719E
+- Ládví: [50.1360989N, 14.4646031E](https://mapy.com/en/turisticka?q=50.1360989%2C50.1360989&source=coor&z=17)
+- Tábor: [50.0896564N, 14.5165433E](https://mapy.com/en/turisticka?q=50.0896564%2C50.0896564&source=coor&z=17)
+- Džbán: [50.0965336N, 14.3216072E](https://mapy.com/en/turisticka?q=50.0965336%2C50.0965336&source=coor&z=17)
+- Vidoule: [50.0598169N, 14.3500167E](https://mapy.com/en/turisticka?q=50.0598169%2C50.0598169&source=coor&z=17)
+- Petřín (rozhledna): [50.0835400N, 14.3950800E](https://mapy.com/en/turisticka?q=50.0835400%2C50.0835400&source=coor&z=17)
+- Děvín: [50.0452308N, 14.3915719E](https://mapy.com/en/turisticka?q=50.0452308%2C50.0452308&source=coor&z=17)
 
 ## Muzeum
 
@@ -44,43 +44,43 @@ a zkušeností z testovací hry v pátek 3. dubna 2026.*
 fyzicky stojí jako významná budova? Also: nepovedlo se mi najít žádné
 buddhistické vyloženě kláštery, nejspíš ještě pořád v Praze nejsou?*
 
-- Emauzy: 50.0719492N, 14.4175814E
-- Alžbětinky na Slupi: 50.0692469N, 14.4208472E
-- Augustiniáni na Karlově: 50.0686356N, 14.4278847E
-- Zderaz: 50.0765439N, 14.4169153E
-- Trinitáři ve Spálené: 50.0799056N, 14.4198950E
-- Sacré Coeur: 50.0755828N, 14.3985456E
-- Benediktini na Smíchově: 50.0751983N, 14.3959308E
-- Premonstráti na Strahově: 50.0862139N, 14.3895722E
-- Benediktini na Břevnově: 50.0851269N, 14.3567703E
-- Dominikáni na Starém Městě: 50.0853658N, 14.4185808E
-- Anežka Česká: 50.0924303N, 14.4239219E
-- Kapucíni na Hradčanech: 50.0897367N, 14.3908833E
-- Kapucíni na Novém Městě: 50.0889011N, 14.4297675E
-- Bosé karmelitky na Malé Straně: 50.0884286N, 14.4065181E
-- Boromejky v Řepích: 50.0694094N, 14.2951569E
-- Benediktinky na Bílé hoře: 50.0694094N, 14.2951569E
-- Benediktinky u sv. Jiří na hradě: 50.0915122N, 14.4024386E
-- Zbraslav: 49.9780750N, 14.3922092E
-- Mnišky kazatelského řádu v Lysolajích: 50.1246350N, 14.3825786E
+- Emauzy: [50.0719492N, 14.4175814E](https://mapy.com/en/turisticka?q=50.0719492%2C50.0719492&source=coor&z=17)
+- Alžbětinky na Slupi: [50.0692469N, 14.4208472E](https://mapy.com/en/turisticka?q=50.0692469%2C50.0692469&source=coor&z=17)
+- Augustiniáni na Karlově: [50.0686356N, 14.4278847E](https://mapy.com/en/turisticka?q=50.0686356%2C50.0686356&source=coor&z=17)
+- Zderaz: [50.0765439N, 14.4169153E](https://mapy.com/en/turisticka?q=50.0765439%2C50.0765439&source=coor&z=17)
+- Trinitáři ve Spálené: [50.0799056N, 14.4198950E](https://mapy.com/en/turisticka?q=50.0799056%2C50.0799056&source=coor&z=17)
+- Sacré Coeur: [50.0755828N, 14.3985456E](https://mapy.com/en/turisticka?q=50.0755828%2C50.0755828&source=coor&z=17)
+- Benediktini na Smíchově: [50.0751983N, 14.3959308E](https://mapy.com/en/turisticka?q=50.0751983%2C50.0751983&source=coor&z=17)
+- Premonstráti na Strahově: [50.0862139N, 14.3895722E](https://mapy.com/en/turisticka?q=50.0862139%2C50.0862139&source=coor&z=17)
+- Benediktini na Břevnově: [50.0851269N, 14.3567703E](https://mapy.com/en/turisticka?q=50.0851269%2C50.0851269&source=coor&z=17)
+- Dominikáni na Starém Městě: [50.0853658N, 14.4185808E](https://mapy.com/en/turisticka?q=50.0853658%2C50.0853658&source=coor&z=17)
+- Anežka Česká: [50.0924303N, 14.4239219E](https://mapy.com/en/turisticka?q=50.0924303%2C50.0924303&source=coor&z=17)
+- Kapucíni na Hradčanech: [50.0897367N, 14.3908833E](https://mapy.com/en/turisticka?q=50.0897367%2C50.0897367&source=coor&z=17)
+- Kapucíni na Novém Městě: [50.0889011N, 14.4297675E](https://mapy.com/en/turisticka?q=50.0889011%2C50.0889011&source=coor&z=17)
+- Bosé karmelitky na Malé Straně: [50.0884286N, 14.4065181E](https://mapy.com/en/turisticka?q=50.0884286%2C50.0884286&source=coor&z=17)
+- Boromejky v Řepích: [50.0694094N, 14.2951569E](https://mapy.com/en/turisticka?q=50.0694094%2C50.0694094&source=coor&z=17)
+- Benediktinky na Bílé hoře: [50.0694094N, 14.2951569E](https://mapy.com/en/turisticka?q=50.0694094%2C50.0694094&source=coor&z=17)
+- Benediktinky u sv. Jiří na hradě: [50.0915122N, 14.4024386E](https://mapy.com/en/turisticka?q=50.0915122%2C50.0915122&source=coor&z=17)
+- Zbraslav: [49.9780750N, 14.3922092E](https://mapy.com/en/turisticka?q=49.9780750%2C49.9780750&source=coor&z=17)
+- Mnišky kazatelského řádu v Lysolajích: [50.1246350N, 14.3825786E](https://mapy.com/en/turisticka?q=50.1246350%2C50.1246350&source=coor&z=17)
 
 ## Nemocnice
 
 *TODO: jak podrobně to chceme? Zahrnovat i následné péče?*
 
-- Vinohrady: 50.0757197N, 14.4754242E
-- Následná péče na Žižkově: 50.0817700N, 14.4479281E
-- Vězeňská nemocnice na Pankráci: 50.0582636N, 14.4381658E
-- Podolská porodnice: 50.0621367N, 14.4192481E
-- Následná péče na Slupi: 50.0692439N, 14.4203839E
-- Všeobecná fakultní nemocnice: 50.0734300N, 14.4209875E
-- Na Františku: 50.0927786N, 14.4214061E
-- Pod Petřínem: 50.0870408N, 14.3962378E
-- Vojenská ve Střešovicích: 50.0898339N, 14.3625906E
-- Homotolka: 50.0737908N, 14.3476933E
-- Bohnice: 50.1334144N, 14.4239881E
-- Bulovka: 50.1160172N, 14.4636911E
-- Thomayerova v Krči a IKEM: 50.0300714N, 14.4563864E
+- Vinohrady: [50.0757197N, 14.4754242E](https://mapy.com/en/turisticka?q=50.0757197%2C50.0757197&source=coor&z=17)
+- Následná péče na Žižkově: [50.0817700N, 14.4479281E](https://mapy.com/en/turisticka?q=50.0817700%2C50.0817700&source=coor&z=17)
+- Vězeňská nemocnice na Pankráci: [50.0582636N, 14.4381658E](https://mapy.com/en/turisticka?q=50.0582636%2C50.0582636&source=coor&z=17)
+- Podolská porodnice: [50.0621367N, 14.4192481E](https://mapy.com/en/turisticka?q=50.0621367%2C50.0621367&source=coor&z=17)
+- Následná péče na Slupi: [50.0692439N, 14.4203839E](https://mapy.com/en/turisticka?q=50.0692439%2C50.0692439&source=coor&z=17)
+- Všeobecná fakultní nemocnice: [50.0734300N, 14.4209875E](https://mapy.com/en/turisticka?q=50.0734300%2C50.0734300&source=coor&z=17)
+- Na Františku: [50.0927786N, 14.4214061E](https://mapy.com/en/turisticka?q=50.0927786%2C50.0927786&source=coor&z=17)
+- Pod Petřínem: [50.0870408N, 14.3962378E](https://mapy.com/en/turisticka?q=50.0870408%2C50.0870408&source=coor&z=17)
+- Vojenská ve Střešovicích: [50.0898339N, 14.3625906E](https://mapy.com/en/turisticka?q=50.0898339%2C50.0898339&source=coor&z=17)
+- Homotolka: [50.0737908N, 14.3476933E](https://mapy.com/en/turisticka?q=50.0737908%2C50.0737908&source=coor&z=17)
+- Bohnice: [50.1334144N, 14.4239881E](https://mapy.com/en/turisticka?q=50.1334144%2C50.1334144&source=coor&z=17)
+- Bulovka: [50.1160172N, 14.4636911E](https://mapy.com/en/turisticka?q=50.1160172%2C50.1160172&source=coor&z=17)
+- Thomayerova v Krči a IKEM: [50.0300714N, 14.4563864E](https://mapy.com/en/turisticka?q=50.0300714%2C50.0300714&source=coor&z=17)
 
 ## Městská knihovna Praha
 
@@ -93,28 +93,28 @@ a [autoritativní seznam](https://www.mlp.cz/cz/pobocky/).
 
 ## Depa metra
 
-- Kačerov: 50.0453890N, 14.4701961E
-- Zličín: 50.0525056N, 14.2773299E
-- Hostivař: 50.0757757N, 14.5177130E
+- Kačerov: [50.0453890N, 14.4701961E](https://mapy.com/en/turisticka?q=50.0453890%2C50.0453890&source=coor&z=17)
+- Zličín: [50.0525056N, 14.2773299E](https://mapy.com/en/turisticka?q=50.0525056%2C50.0525056&source=coor&z=17)
+- Hostivař: [50.0757757N, 14.5177130E](https://mapy.com/en/turisticka?q=50.0757757%2C50.0757757&source=coor&z=17)
 
 ## Vozovny tramvají
 
-- Hloubětín: 50.1085517N, 14.5300803E
-- Kobylisy: 50.1320375N, 14.4508083E
-- Motol: 50.0672517N, 14.3394792E
-- Pankrác: 50.0562253N, 14.4389939E
-- Strašnice: 50.0760811N, 14.4875108E
-- Střešovice: 50.0942517N, 14.3890364E
-- Ústřední dílny: 50.0723775N, 14.5310653E
-- Vokovice: 50.0919392N, 14.3298417E
-- Žižkov: 50.0904108N, 14.4773675E
+- Hloubětín: [50.1085517N, 14.5300803E](https://mapy.com/en/turisticka?q=50.1085517%2C50.1085517&source=coor&z=17)
+- Kobylisy: [50.1320375N, 14.4508083E](https://mapy.com/en/turisticka?q=50.1320375%2C50.1320375&source=coor&z=17)
+- Motol: [50.0672517N, 14.3394792E](https://mapy.com/en/turisticka?q=50.0672517%2C50.0672517&source=coor&z=17)
+- Pankrác: [50.0562253N, 14.4389939E](https://mapy.com/en/turisticka?q=50.0562253%2C50.0562253&source=coor&z=17)
+- Strašnice: [50.0760811N, 14.4875108E](https://mapy.com/en/turisticka?q=50.0760811%2C50.0760811&source=coor&z=17)
+- Střešovice: [50.0942517N, 14.3890364E](https://mapy.com/en/turisticka?q=50.0942517%2C50.0942517&source=coor&z=17)
+- Ústřední dílny: [50.0723775N, 14.5310653E](https://mapy.com/en/turisticka?q=50.0723775%2C50.0723775&source=coor&z=17)
+- Vokovice: [50.0919392N, 14.3298417E](https://mapy.com/en/turisticka?q=50.0919392%2C50.0919392&source=coor&z=17)
+- Žižkov: [50.0904108N, 14.4773675E](https://mapy.com/en/turisticka?q=50.0904108%2C50.0904108&source=coor&z=17)
 
 ## Garáže autobusů
-- Klíčov: 50.1201243N, 14.5096056E
-- Vršovice: 50.0617529N, 14.4728865E
-- Kačerov: 50.0403018N, 14.4675164E
-- Hostivař: 50.0730571N, 14.5238387E
-- Řepy: 50.0743652N, 14.3059985E
+- Klíčov: [50.1201243N, 14.5096056E](https://mapy.com/en/turisticka?q=50.1201243%2C50.1201243&source=coor&z=17)
+- Vršovice: [50.0617529N, 14.4728865E](https://mapy.com/en/turisticka?q=50.0617529%2C50.0617529&source=coor&z=17)
+- Kačerov: [50.0403018N, 14.4675164E](https://mapy.com/en/turisticka?q=50.0403018%2C50.0403018&source=coor&z=17)
+- Hostivař: [50.0730571N, 14.5238387E](https://mapy.com/en/turisticka?q=50.0730571%2C50.0730571&source=coor&z=17)
+- Řepy: [50.0743652N, 14.3059985E](https://mapy.com/en/turisticka?q=50.0743652%2C50.0743652&source=coor&z=17)
 
 ## Stanice těžké kolejové dopravy
 
