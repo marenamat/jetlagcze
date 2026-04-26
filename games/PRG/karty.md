@@ -18,7 +18,8 @@ Naše varianta má poněkud méně časových bonusů, protože máme rádi curs
 65+44+29 = 138, přepočteno 47%, 32%, 21%.
 
 Je-li vypršení efektu curse navázáno na konkrétní událost, které nejsou
-hledající schopni dosáhnout, vyprší efekt 120 minut po seslání.
+hledající schopni dosáhnout (např. kvůli skill issue), vyprší efekt 120 minut
+po seslání.
 
 Časové bonusy (mid):
 

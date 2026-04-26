@@ -33,7 +33,7 @@ Vhodné je, když všichni nasdílejí své kontakty do společného chatu nejpo
 večer předem, a zkusí začít sdílet polohu půl hodiny před startem se všemi
 ostatními.
 
-Sraz 8:30 na startovním místě. Hodí se zastřešené pro případ, že by pršelo.
+Sraz 7:45 na startovním místě. Hodí se zastřešené pro případ, že by pršelo.
 
 ## Start a konec
 
@@ -46,7 +46,7 @@ zbytek krabice si nechají schovávači.
 Všechny strany hodí trojicí kostek; kdo hodí nejvíc, ten převezme krabku
 a začíná se schovávat.
 
-Hra končí ve 20:00, pokud se hráčstvo nedohodne jinak.
+Hra končí ve 21:00, pokud se hráčstvo nedohodne jinak.
 
 Místo startu je na domluvě. Když se udělá moc dostupné, tak mají první hledači
 dvakrát tak velkou mapu oproti ostatním. Problém je patrně řešitelný tím, že se
@@ -82,14 +82,20 @@ Po dobu hledacího času se schovaná strana může volně pohybovat po celé sc
 oblasti, kterou tvoří okruh 500 metrů vzdušnou čarou od referenční zastávky.
 
 Hledací čas končí ve chvíli, kdy hledající strana prokazatelně nalezla
-schovanou stranu, nejpozději však 240 minut po začátku hledání.
+schovanou stranu, nejpozději však 300 minut po začátku hledání.
 
 ## Koncovka
 
 Ve chvíli, kdy hledající strana vstoupila do schovací oblasti, nastala koncovka.
 Schovana strana se od té chvíle nesmí pohybovat a musí se vyskytovat nanejvýš
-tři metry od cesty značené v mapě plnou čarou, tj. ulice, zpevněné cesty a
-turisticky značené cesty, a to v oblasti veřejně dostupné. 
+tři metry od cesty, a to v oblasti veřejně legálně dostupné.
+
+Cestou se rozumí:
+
+- pojmenované ulice a zpevněné cesty (v mapy.cz plnou čarou)
+- turisticky značené cesty (pěší i cyklo)
+- cesty značené v mapy.cz černou dlouze-čárkovanou čarou za podmínky, že jsou
+  v terénu zřetelně viditelné a průchozí.
 
 Začátek koncovky se hledající straně neoznamuje, a pokud hledající strana schovací
 oblast zase opustí, tak se koncovka přerušuje a schovaná strana se i může přesunout.
