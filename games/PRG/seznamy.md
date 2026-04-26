@@ -30,7 +30,7 @@ a zkušeností z testovací hry v pátek 3. dubna 2026.*
 
 *do doplnění seznamu použijte na mapy.cz vyhledávání "muzeum"*
 
-## Kino 
+## Kino
 
 *do doplnění seznamu použijte na mapy.cz vyhledávání "kino"*
 
@@ -91,6 +91,12 @@ a [autoritativní seznam](https://www.mlp.cz/cz/pobocky/).
 
 **Jiné knihovny se nepočítají.**
 
+## Depa metra
+
+- Kačerov: 50.0453890N, 14.4701961E
+- Zličín: 50.0525056N, 14.2773299E
+- Hostivař: 50.0757757N, 14.5177130E
+
 ## Vozovny tramvají
 
 - Hloubětín: 50.1085517N, 14.5300803E
@@ -102,6 +108,13 @@ a [autoritativní seznam](https://www.mlp.cz/cz/pobocky/).
 - Ústřední dílny: 50.0723775N, 14.5310653E
 - Vokovice: 50.0919392N, 14.3298417E
 - Žižkov: 50.0904108N, 14.4773675E
+
+## Garáže autobusů
+- Klíčov: 50.1201243N, 14.5096056E
+- Vršovice: 50.0617529N, 14.4728865E
+- Kačerov: 50.0403018N, 14.4675164E
+- Hostivař: 50.0730571N, 14.5238387E
+- Řepy: 50.0743652N, 14.3059985E
 
 ## Stanice těžké kolejové dopravy
 

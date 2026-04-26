@@ -33,7 +33,9 @@ na kterém místě fyzicky je ve chvíli, kdy na otázku odpovídá.*
 - **Klášter**: Máme tentýž nejbližší [klášter](seznamy.md#klášter)?
 - **Nemocnice**: Máme tutéž nejbližší [nemocnici](seznamy.md#nemocnice)?
 - **Pobočku městské knihovny**: Máme tutéž nejbližší [pobočku městské knihovny](seznamy.md#městská-knihovna-praha)?
+- **Depo metra**: Máme totéž nejbližší [depo metra](seznamy.md#depa-metra)?
 - **Vozovnu tramvají**: Máme tutéž nejbližší [vozovnu tramvají](seznamy.md#vozovny-tramvají)?
+- **Garáž autobusů**: Máme tutéž nejbližší [garáž autobů](seznamy.md#garáže-autobusů)?
 
 ## Měření
 
