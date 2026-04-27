@@ -4,8 +4,7 @@
 [JetLag Hide&Seek](https://store.nebula.tv/collections/jetlag/products/hideandseek)
 a zkušeností z testovací hry v pátek 3. dubna 2026.
 Na otázky, na které nenajdete odpověď zde, hledejte
-odpověď v originálních pravidlech.
-*
+odpověď v originálních pravidlech.*
 
 *Změnu nebo doplnění pravidel navrhněte jako
 [github issue](https://github.com/marenamat/jetlagcze/issues).*
