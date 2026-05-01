@@ -17,7 +17,7 @@ Okruh schovávání je 500 metrů od GPS souřadnic uvedených v seznamu.
 
 Pohybujeme se pěšky a spoji PID, které jsou v zónách P, 0 a B na území hlavního
 města Prahy, konkrétně vším, v čem platí
-[jízdenka na 24 hodin pro Prahu](https://pid.cz/jizdne-a-tarif/).
+[jízdenka na 24 hodin pro Prahu](https://pid.cz/jizdne-a-tarif/). Explicitně **ne**hrajeme na zastávkách jako Tuchoměřice,Outlet (technicky v B pro jedinou linku, co tam staví, a mimo území Prahy). 
 
 Autoritativní mapovou aplikací je [mapy.cz](https://mapy.cz), ale pokud existuje
 k dané věci konkrétní seznam, má přednost ten.
@@ -47,17 +47,17 @@ a začíná se schovávat.
 
 Hra končí ve 21:00, pokud se hráčstvo nedohodne jinak.
 
-Místo startu je na domluvě. Když se udělá moc dostupné, tak mají první hledači
-dvakrát tak velkou mapu oproti ostatním. Problém je patrně řešitelný tím, že se
-nebude začínat vprostřed václaváku, ale kus za rohem. Nejspíš stačí Jindřišská.
+Sraz v 7:45 [před cukrárnou ve Světozoru](https://mapy.com/s/pacejugape).
 
 ## Schovávání
 
-Na schovávání má tým 50 minut od chvíle, kdy převzal krabku. Tento čas se
+Na schovávání má tým 60 minut od chvíle, kdy převzal krabku. Tento čas se
 může posunout o dobu, po kterou z okruhu 1 kilometru (pěším pochodem, ne vzdušně)
 od schovacího místa nejede žádný dosažitelný spoj; požadavek na posun uplatňuje
 schovávající se strana ideálně v okamžiku, kdy zjistila, že tento problém
 nastal, ne však později než 10 minut po začátku schovacího času.
+
+**První kolo má čas zkrácený na 45 minut** kvůli dopravní dostupnosti centra města v porovnání s periferií.
 
 Zpoždění MHD je součástí rizika volby trasy.
 
