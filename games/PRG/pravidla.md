@@ -85,6 +85,13 @@ oblasti, kterou tvoří okruh 500 metrů vzdušnou čarou od referenční zastá
 Hledací čas končí ve chvíli, kdy hledající strana prokazatelně nalezla
 schovanou stranu, nejpozději však 300 minut po začátku hledání.
 
+Hledající strana má zakázané některé nástroje, jejichž použití by zjednodušilo
+hledání k nehratelnosti. Především je **zcela zakázáno** cíleně procházet možné oblasti
+pomocí nástrojů jako **Panorama nebo Google StreetView** a používat fotomapy.
+Naopak je naprosto v pořádku použít libovolným způsobem jízdní řády a mapy bez fotek.
+
+Více poznámek následuje u [fotootázek](otazky.md#dodatečné-poznámky-k-fotkám).
+
 ## Koncovka
 
 Ve chvíli, kdy hledající strana vstoupila do schovací oblasti, nastala koncovka.

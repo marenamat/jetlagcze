@@ -109,3 +109,24 @@ Na všech fotkách je dovoleno cenzurovat všechny reklamy, čísla, texty a log
   jenom jednolitá dlažba). Tramvajové a autobusové zastávky nemají nástupiště.
 - **Park**. Fotka mobilem kolmým k zemi, od sebe. Před mobilem musí být aspoň dva
   metry volného místa. Počítá se park, les, případně křoví o ploše aspoň 100 m².
+
+### Dodatečné poznámky k fotkám
+
+Při focení je třeba očekávat, že hledači můžou fotku omylem najít skrze
+rozkliknutí nějakého objektu v mapové aplikaci, nebo vyhledávačem, a to
+i přes obecný zákaz ortofotomap a streetview. Taková identifikace je nešťastná,
+protože jistým způsobem kazí hru, ale při intenzivním vyhledávání se jí nelze
+zcela vyhnout. Je tedy doporučeno **před pořizováním fotky prozkoumat, jestli
+tomu nejdu naproti**, byť někdy prostě není jak se tomu vyhnout.
+
+Hledačům jest zapovězeno nahrávat přijaté fotky do aplikací typu Google Lens,
+které by automatizovaně dokázaly rozpoznat polohu. Toto pravidlo je méně
+zajímavé pro fotky stromu nebo oblohy, ale budovy tímhle můžou být snadno
+identifikovatelné. Stejně tak je nevhodné tímto způsobem použít kolemjdoucí,
+přítele na telefonu nebo jiné externí osoby.
+
+Hledačům jest doporučeno používat fotky primárně ke zhodnocení *vibes*, které
+hiding zone má, případně k vylučování perspektivních lokalit stylem „no tady to
+ale rozhodně být nemůže“. Pokud však fotka poskytuje snadnou cestu k
+identifikaci konkrétní lokality, nelze se na hledače zlobit, že tuto informaci
+využijí.
