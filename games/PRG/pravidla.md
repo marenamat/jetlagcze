@@ -69,6 +69,8 @@ ke které to nemá dál než 500 metrů vzdušnou
 Na onu zastávku nemusí v době hry vůbec jet žádné spoje PID, jedná se primárně
 o referenční bod.
 
+Ve schovací zóně by měl být takový signál, aby se dalo rozumně odpovídat na otázky. Pokud schovanci zjistí, že signál v místě je skutečně mizerný, musí zvolit jinou vhodnou blízkou schovací zónu, do které se mohli legálně dostat, a případně výslovně updatovat již odeslané odpovědi na otázky. *Jedná se o pravidlo pro výjimečné případy. Nepoužívat, dokud to není opravdu nutné.*
+
 ## Hledání
 
 Uplynutím schovacího času začíná čas hledací. Hledající strana posílá schovaným
