@@ -23,13 +23,13 @@ export function get_zones(): any;
  * Load stop data from a CBOR byte slice.
  * Must be called once before filter_stops.
  */
-export function load_stops(cbor_bytes: Uint8Array): number;
+export function load_stops(cbor_bytes: Uint8Array | number[]): number;
 
 /**
  * Load departure-times data from a CBOR byte slice.
  * Can be called asynchronously after load_stops.
  */
-export function load_times(cbor_bytes: Uint8Array): number;
+export function load_times(cbor_bytes: Uint8Array | number[]): number;
 
 /**
  * Search stops by name (case-insensitive substring match).
@@ -66,6 +66,7 @@ export interface InitOutput {
     readonly stop_stats: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => [number, number, number];
     readonly __wbindgen_malloc: (a: number, b: number) => number;
     readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
+    readonly __wbindgen_free: (a: number, b: number, c: number) => void;
     readonly __wbindgen_externrefs: WebAssembly.Table;
     readonly __externref_table_dealloc: (a: number) => void;
     readonly __wbindgen_start: () => void;
